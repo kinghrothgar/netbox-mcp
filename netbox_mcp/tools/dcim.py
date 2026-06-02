@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List
 
-from ..helpers import _get_detail, _get_list, _search
+from ..helpers import _get_action, _get_detail, _get_list, _search
 from ..server import mcp
 
 
@@ -1971,4 +1971,333 @@ async def get_virtual_device_context_details(args: Dict[str, Any]) -> List[Dict[
         return []
     return await _get_detail("dcim/virtual-device-contexts/", args["id"], args)
 
+
+# dcim/rack-groups
+
+@mcp.tool(
+    annotations={
+        "title": "Search Rack Groups",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def search_rack_groups(args: Dict[str, Any]) -> Dict[str, Any]:
+    """Search rack groups (dcim/rack-groups/).
+    Accepts: name, slug, parent, ancestor, q, tag, limit
+        name: Name of the rack group (case-insensitive contains match)
+        slug: Rack group slug (exact match)
+        parent: Parent rack group ID
+        ancestor: Ancestor rack group ID (any depth)
+        q: Free-text search across name and description
+        tag: Tag slug (single)
+        limit: Maximum number of results to return (default 10)
+
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact rack group objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
+    """
+    mappings = {
+        "name": "name__ic",
+        "slug": "slug",
+        "parent": "parent_id",
+        "ancestor": "ancestor_id",
+        "q": "q",
+        "tag": "tag",
+    }
+    return await _search("dcim/rack-groups/", args, mappings)
+
+
+@mcp.tool(
+    annotations={
+        "title": "Get Rack Group Details",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def get_rack_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Get rack group by ID (dcim/rack-groups/{id}/).
+    Accepts: id (required)
+        id: Numeric ID of the rack group to fetch. Returns `[obj]` or `[]`.
+    """
+    if "id" not in args:
+        return []
+    return await _get_detail("dcim/rack-groups/", args["id"], args)
+
+
+# dcim/cable-terminations
+
+@mcp.tool(
+    annotations={
+        "title": "Search Cable Terminations",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def search_cable_terminations(args: Dict[str, Any]) -> Dict[str, Any]:
+    """Search cable terminations (dcim/cable-terminations/).
+    Accepts: cable, termination_type, termination_id, cable_end, q, limit
+        cable: Cable ID
+        termination_type: Content type of the termination (e.g. 'dcim.interface')
+        termination_id: ID of the termination object
+        cable_end: 'A' or 'B'
+        q: Free-text search
+        limit: Maximum number of results to return (default 10)
+
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact cable termination objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
+    """
+    mappings = {
+        "cable": "cable_id",
+        "termination_type": "termination_type",
+        "termination_id": "termination_id",
+        "cable_end": "cable_end",
+        "q": "q",
+    }
+    return await _search("dcim/cable-terminations/", args, mappings)
+
+
+@mcp.tool(
+    annotations={
+        "title": "Get Cable Termination Details",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def get_cable_termination_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Get cable termination by ID (dcim/cable-terminations/{id}/).
+    Accepts: id (required)
+        id: Numeric ID of the cable termination to fetch. Returns `[obj]` or `[]`.
+    """
+    if "id" not in args:
+        return []
+    return await _get_detail("dcim/cable-terminations/", args["id"], args)
+
+
+# dcim/cable-bundles (NetBox v4.6+)
+
+@mcp.tool(
+    annotations={
+        "title": "Search Cable Bundles",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def search_cable_bundles(args: Dict[str, Any]) -> Dict[str, Any]:
+    """Search cable bundles (dcim/cable-bundles/).
+    Accepts: name, q, tag, limit
+        name: Name of the cable bundle (case-insensitive contains match)
+        q: Free-text search across name and description
+        tag: Tag slug (single)
+        limit: Maximum number of results to return (default 10)
+
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact cable bundle objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
+    """
+    mappings = {
+        "name": "name__ic",
+        "q": "q",
+        "tag": "tag",
+    }
+    return await _search("dcim/cable-bundles/", args, mappings)
+
+
+@mcp.tool(
+    annotations={
+        "title": "Get Cable Bundle Details",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def get_cable_bundle_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Get cable bundle by ID (dcim/cable-bundles/{id}/).
+    Accepts: id (required)
+        id: Numeric ID of the cable bundle to fetch. Returns `[obj]` or `[]`.
+    """
+    if "id" not in args:
+        return []
+    return await _get_detail("dcim/cable-bundles/", args["id"], args)
+
+
+# --- dcim action endpoints (cable trace, rack elevation, rendered config) ---
+
+# dcim/console-ports/{id}/trace
+
+@mcp.tool(
+    annotations={
+        "title": "Trace Console Port Cable Path",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def get_console_port_trace(args: Dict[str, Any]) -> Any:
+    """Trace the cable path from a console port (dcim/console-ports/{id}/trace/).
+    Accepts: id (required)
+        id: Numeric ID of the console port.
+
+    Returns the full cable path as a list of `[near_termination, cable, far_termination]`
+    segments, traversing any patch panels in between. Returns `[]` on error.
+    """
+    if "id" not in args:
+        return []
+    return await _get_action(f"dcim/console-ports/{args['id']}/trace/", args)
+
+
+# dcim/console-server-ports/{id}/trace
+
+@mcp.tool(
+    annotations={
+        "title": "Trace Console Server Port Cable Path",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def get_console_server_port_trace(args: Dict[str, Any]) -> Any:
+    """Trace the cable path from a console server port (dcim/console-server-ports/{id}/trace/).
+    Accepts: id (required)
+        id: Numeric ID of the console server port.
+
+    Returns the full cable path as a list of `[near_termination, cable, far_termination]`
+    segments, traversing any patch panels in between. Returns `[]` on error.
+    """
+    if "id" not in args:
+        return []
+    return await _get_action(f"dcim/console-server-ports/{args['id']}/trace/", args)
+
+
+# dcim/power-ports/{id}/trace
+
+@mcp.tool(
+    annotations={
+        "title": "Trace Power Port Cable Path",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def get_power_port_trace(args: Dict[str, Any]) -> Any:
+    """Trace the cable path from a power port (dcim/power-ports/{id}/trace/).
+    Accepts: id (required)
+        id: Numeric ID of the power port.
+
+    Returns the full cable path as a list of `[near_termination, cable, far_termination]`
+    segments, traversing any patch panels in between. Returns `[]` on error.
+    """
+    if "id" not in args:
+        return []
+    return await _get_action(f"dcim/power-ports/{args['id']}/trace/", args)
+
+
+# dcim/power-outlets/{id}/trace
+
+@mcp.tool(
+    annotations={
+        "title": "Trace Power Outlet Cable Path",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def get_power_outlet_trace(args: Dict[str, Any]) -> Any:
+    """Trace the cable path from a power outlet (dcim/power-outlets/{id}/trace/).
+    Accepts: id (required)
+        id: Numeric ID of the power outlet.
+
+    Returns the full cable path as a list of `[near_termination, cable, far_termination]`
+    segments, traversing any patch panels in between. Returns `[]` on error.
+    """
+    if "id" not in args:
+        return []
+    return await _get_action(f"dcim/power-outlets/{args['id']}/trace/", args)
+
+
+# dcim/interfaces/{id}/trace
+
+@mcp.tool(
+    annotations={
+        "title": "Trace Interface Cable Path",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def get_interface_trace(args: Dict[str, Any]) -> Any:
+    """Trace the cable path from an interface (dcim/interfaces/{id}/trace/).
+    Accepts: id (required)
+        id: Numeric ID of the interface.
+
+    Returns the full cable path as a list of `[near_termination, cable, far_termination]`
+    segments, traversing any patch panels in between. Returns `[]` on error.
+    """
+    if "id" not in args:
+        return []
+    return await _get_action(f"dcim/interfaces/{args['id']}/trace/", args)
+
+
+# dcim/power-feeds/{id}/trace
+
+@mcp.tool(
+    annotations={
+        "title": "Trace Power Feed Cable Path",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def get_power_feed_trace(args: Dict[str, Any]) -> Any:
+    """Trace the cable path from a power feed (dcim/power-feeds/{id}/trace/).
+    Accepts: id (required)
+        id: Numeric ID of the power feed.
+
+    Returns the full cable path as a list of `[near_termination, cable, far_termination]`
+    segments, traversing any patch panels in between. Returns `[]` on error.
+    """
+    if "id" not in args:
+        return []
+    return await _get_action(f"dcim/power-feeds/{args['id']}/trace/", args)
+
+
+# dcim/racks/{id}/elevation
+
+@mcp.tool(
+    annotations={
+        "title": "Get Rack Elevation",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def get_rack_elevation(args: Dict[str, Any]) -> Any:
+    """Get rack elevation (dcim/racks/{id}/elevation/).
+    Accepts: id (required), face, render, unit_width, unit_height,
+             legend_width, exclude, expand_devices, include_images
+        id: Numeric ID of the rack.
+        face: 'front' or 'rear' (default: front)
+        render: 'json' (default) or 'svg'
+
+    Returns the rack's unit-by-unit elevation listing installed devices,
+    or `[]` on error. Use this to answer "what's mounted in rack X".
+    """
+    if "id" not in args:
+        return []
+    return await _get_action(f"dcim/racks/{args['id']}/elevation/", args)
+
+
+# dcim/devices/{id}/render-config
+
+@mcp.tool(
+    annotations={
+        "title": "Get Device Rendered Config",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def get_device_rendered_config(args: Dict[str, Any]) -> Any:
+    """Render a device's assigned config template (dcim/devices/{id}/render-config/).
+    Accepts: id (required), format
+        id: Numeric ID of the device.
+        format: 'json' or 'txt' (NetBox default depends on Accept header)
+
+    Returns the rendered configuration text/JSON, or `[]` on error.
+    Only works for devices with an assigned `config_template`.
+    """
+    if "id" not in args:
+        return []
+    return await _get_action(f"dcim/devices/{args['id']}/render-config/", args)
 

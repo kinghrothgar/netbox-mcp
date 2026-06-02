@@ -221,6 +221,62 @@ async def get_contact_role_details(args: Dict[str, Any]) -> List[Dict[str, Any]]
     return await _get_detail("tenancy/contact-roles/", args["id"], args)
 
 
+# tenancy/contact-assignments
+
+@mcp.tool(
+    annotations={
+        "title": "Search Contact Assignments",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def search_contact_assignments(args: Dict[str, Any]) -> Dict[str, Any]:
+    """Search contact assignments (tenancy/contact-assignments/).
+    Accepts: object_type, object_id, contact, group, role, priority, q, tag, limit
+        object_type: Content type of the assigned object (e.g. 'dcim.device')
+        object_id: Numeric ID of the assigned object
+        contact: Contact ID
+        group: Contact group ID or slug
+        role: Contact role ID or slug
+        priority: Priority value (e.g. 'primary', 'secondary', 'tertiary', 'inactive')
+        q: Free-text search
+        tag: Tag slug (single)
+        limit: Maximum number of results to return (default 10)
+
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact contact assignment objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
+    """
+    mappings = {
+        "object_type": "object_type",
+        "object_id": "object_id",
+        "contact": "contact",
+        "group": "group",
+        "role": "role",
+        "priority": "priority",
+        "q": "q",
+        "tag": "tag",
+    }
+    return await _search("tenancy/contact-assignments/", args, mappings)
+
+
+@mcp.tool(
+    annotations={
+        "title": "Get Contact Assignment Details",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def get_contact_assignment_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Get contact assignment by ID (tenancy/contact-assignments/{id}/).
+    Accepts: id (required)
+        id: Numeric ID of the contact assignment to fetch. Returns `[obj]` or `[]`.
+    """
+    if "id" not in args:
+        return []
+    return await _get_detail("tenancy/contact-assignments/", args["id"], args)
+
+
 
 
 

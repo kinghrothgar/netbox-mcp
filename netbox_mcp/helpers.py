@@ -156,6 +156,31 @@ async def _get_detail(endpoint_base: str, id_value: Any, args: Optional[Dict[str
         return []
 
 
+async def _get_action(endpoint: str, args: Optional[Dict[str, Any]] = None) -> Any:
+    """Fetch a NetBox sub-resource action endpoint.
+
+    Used for endpoints like ``dcim/interfaces/{id}/trace/``,
+    ``dcim/racks/{id}/elevation/``, ``dcim/devices/{id}/render-config/``
+    which return action-specific JSON shapes (list of cable segments,
+    list of rack units, rendered config blob) that we should not munge.
+
+    Forwards ``fields``/``exclude`` from ``args`` when present so callers
+    can still project. Returns the raw NetBox payload (list, dict, or
+    other) or ``[]`` on error to match the broader tool convention of
+    never raising into the LLM.
+    """
+    args = args or {}
+    params: Dict[str, Any] = {}
+    _apply_common_args(args, params)
+    params.pop("offset", None)
+
+    netbox_client = NetBoxClient(NETBOX_URL, NETBOX_TOKEN)
+    try:
+        return await netbox_client.get(endpoint, params or None)
+    except Exception:
+        return []
+
+
 async def _get_list(endpoint: str, args: Dict[str, Any], default_limit: int = 10) -> List[Dict[str, Any]]:
     """Fetch an endpoint that returns a JSON list directly (no `results` envelope).
 
