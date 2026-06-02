@@ -8,10 +8,10 @@ RUN pip install --no-cache-dir \
 
 # Built from this repo (kinghrothgar/netbox-mcp). Bump the tag when bumping
 # the source.
-COPY app.py /app/app.py
+COPY netbox_mcp /app/netbox_mcp
 
 USER 65534
 
 EXPOSE 8000
 
-CMD ["python", "/app/app.py"]
+CMD ["python", "-m", "netbox_mcp"]
