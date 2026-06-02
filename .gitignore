@@ -77,3 +77,9 @@ instance/
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Demo NetBox integration test credentials (auto-bootstrapped)
+.netbox-demo-creds.json
+
+# pytest cache
+.pytest_cache/
