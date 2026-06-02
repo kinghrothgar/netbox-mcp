@@ -24,8 +24,8 @@ Thank you for your interest in contributing to the NetBox MCP Server project!
 
 4. **Test your setup**
    ```bash
-   python3 -m py_compile app.py
-   python3 app.py
+   python3 -m py_compile netbox_mcp/__main__.py netbox_mcp/tools/*.py
+   python3 -m netbox_mcp
    ```
 
 ## Development Guidelines
@@ -35,17 +35,17 @@ This repository follows specific conventions for adding NetBox MCP tools. **Plea
 ### Quick Summary
 
 - Each NetBox resource must have two tools: `search_<resource>` and `get_<resource>_details`
-- Tools must be organized by NetBox API root (circuits, dcim, ipam, etc.)
+- Tools are organized one module per NetBox app under `netbox_mcp/tools/` (`circuits.py`, `dcim.py`, `ipam.py`, ...)
 - All tools require descriptive docstrings with clear parameter documentation
-- Use the helper functions `_search()` and `_get_detail()` (defined in `app.py`) to reduce code duplication
+- Use the helper functions `_search()`, `_get_detail()`, and `_get_list()` (defined in `netbox_mcp/helpers.py`) to reduce code duplication
 - Return structured JSON objects (no human-readable messages in responses)
 
 ### Adding a New Resource
 
-1. Identify the NetBox API endpoint and appropriate section in `app.py`
+1. Identify the NetBox API endpoint and open the corresponding module in `netbox_mcp/tools/<app>.py` (create one if the app doesn't have a module yet, and import it from `netbox_mcp/tools/__init__.py`)
 2. Create `search_<resource>` function with proper docstring and parameter mapping
 3. Create `get_<resource>_details` function for single object lookup
-4. Run syntax check: `python3 -m py_compile app.py`
+4. Run syntax check: `python3 -m py_compile netbox_mcp/tools/<app>.py`
 5. Test your changes with a running NetBox instance
 6. Commit with a clear message describing what was added
 
@@ -62,7 +62,7 @@ For detailed step-by-step instructions, see the "How to add a new resource (step
 
 Before submitting a PR:
 
-1. Run syntax check: `python3 -m py_compile app.py`
+1. Run syntax check: `python3 -m py_compile netbox_mcp/__main__.py netbox_mcp/tools/*.py`
 2. Test with your NetBox instance to verify tools work correctly
 3. Verify parameter mapping matches NetBox API expectations
 
@@ -70,7 +70,7 @@ Before submitting a PR:
 
 If you have questions or encounter issues:
 - Check the [`.github/copilot-instructions.md`](.github/copilot-instructions.md) for detailed guidance
-- Review existing tools in `app.py` for examples
+- Review existing tools under `netbox_mcp/tools/` for examples
 - Open an issue on GitHub for discussion
 
 ## License

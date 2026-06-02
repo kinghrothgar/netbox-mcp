@@ -2,7 +2,7 @@
 
 Purpose
 ------
-This document describes the expected structure, conventions, and contributor guidance for the FastMCP-based NetBox tool collection in this repository (primary runtime: `app.py`). The core rule: every NetBox data element in the model must be represented by two explicit MCP tools:
+This document describes the expected structure, conventions, and contributor guidance for the FastMCP-based NetBox tool collection in this repository. The core rule: every NetBox data element in the model must be represented by two explicit MCP tools:
 
 - `search_<resource>(args)`: queries the API collection endpoint and supports a set of optional filters.
 - `get_<resource>_details(args)`: fetches a single object by ID and returns a single-element list or an empty list.
@@ -13,7 +13,20 @@ Project structure
 ----------------
 ```
 .
-├── app.py                          # Main MCP server with all tool definitions
+├── netbox_mcp/
+│   ├── __init__.py
+│   ├── __main__.py                 # `python -m netbox_mcp` entry point
+│   ├── client.py                   # NetBoxClient + shared httpx client + env config
+│   ├── helpers.py                  # _build_params, _search, _get_detail, _get_list
+│   ├── server.py                   # mcp = FastMCP(...) singleton
+│   └── tools/
+│       ├── __init__.py             # side-effect imports of every tools.<app>
+│       ├── circuits.py
+│       ├── dcim.py
+│       ├── tenancy.py
+│       └── ipam.py
+├── Dockerfile                      # Container image build
+├── Makefile                        # build-dev / run-dev targets
 ├── .github/
 │   └── copilot-instructions.md     # This file - Copilot coding guidelines
 ├── .gitignore                      # Git ignore patterns
@@ -22,9 +35,9 @@ Project structure
 
 Repository conventions
 ---------------------
-- Main MCP tool file: `app.py`.
-- NetBox HTTP helper: `NetBoxClient` defined in `app.py` (wraps `httpx.AsyncClient` and performs `get(endpoint, params)`).
-- MCP registration: functions are decorated with `@mcp.tool` and are async functions with signature `async def func(args: Dict[str, Any]) -> List[Dict[str, Any]]`.
+- Tools live under `netbox_mcp/tools/<app>.py`, one module per NetBox app.
+- Shared infrastructure: `netbox_mcp/client.py` (NetBoxClient wrapping `httpx.AsyncClient`), `netbox_mcp/helpers.py` (search/detail/list helpers), `netbox_mcp/server.py` (`mcp = FastMCP(...)` singleton).
+- MCP registration: functions are decorated with `@mcp.tool` and are async functions with signature `async def func(args: Dict[str, Any]) -> List[Dict[str, Any]]`. Tools register at import time; `netbox_mcp/tools/__init__.py` imports every submodule so all decorators fire before the server starts.
 
 Dependencies and setup
 ---------------------
@@ -38,12 +51,13 @@ To set up the development environment:
 3. Set environment variables (see README.md):
    - `NETBOX_URL` — Base URL to your NetBox instance
    - `NETBOX_TOKEN` — NetBox API token with read permissions
+   - `MCP_HOST` — Bind address for the FastMCP HTTP transport (default: 0.0.0.0)
    - `MCP_PORT` — Port for the FastMCP HTTP transport (default: 8000)
-4. Run the server: `python3 app.py`
+4. Run the server: `python3 -m netbox_mcp`
 
 API grouping and ordering
 -------------------------
-Tools in `app.py` should be physically ordered by API root in this sequence and separated by a clear comment block for readability:
+Each NetBox app gets its own module under `netbox_mcp/tools/`. The recommended file ordering is:
 
 1. circuits
 2. core
@@ -58,19 +72,17 @@ Tools in `app.py` should be physically ordered by API root in this sequence and 
 11. vpn
 12. wireless
 
-Insert a comment block like:
+Inside each `netbox_mcp/tools/<app>.py` module, use hierarchical
+API-path comments for individual resources to mirror the NetBox API
+path structure and make tools easy to find by endpoint:
 
-# --- dcim (devices, racks, interfaces, etc.) ---
+# dcim/sites
 
-above each group to make the file navigable.
+# dcim/cables
 
-In addition to the group-level separator, tools should also use hierarchical API-path comments for individual resources inside a group. This mirrors the NetBox API path structure and makes it easy to find tools by endpoint. For example, use a small hierarchy of comments exactly like the repository uses:
-
-# tenancy
-
-# tenancy/tenants
-
-Place the group-level separator (e.g. `# --- tenancy ( ... ) ---`) before the group, and then use the simple `# <api-root>` and `# <api-root>/<resource>` comment lines for each resource within that group.
+The module docstring at the top of the file plays the role of the
+previous group-level separator. Use simple `# <api-root>/<resource>`
+comment lines above each resource's tools within the module.
 
 Naming and signatures
 ---------------------
@@ -109,7 +121,7 @@ When you add or reorder tools:
 - Run a quick syntax check:
 
 ```bash
-python3 -m py_compile app.py
+python3 -m py_compile netbox_mcp/__main__.py netbox_mcp/tools/*.py
 ```
 
 - Verify imports (ensure `fastmcp`, `httpx`, and typing hints are present).
@@ -117,17 +129,21 @@ python3 -m py_compile app.py
 
 How to add a new resource (step-by-step)
 ----------------------------------------
-1. Choose the API group (see ordering above) and open the corresponding section in `app.py`.
-2. Create `search_<resource>` function with:
+1. Open the corresponding `netbox_mcp/tools/<app>.py` module. If the
+   NetBox app doesn't have a module yet, create one and add a side-effect
+   import for it to `netbox_mcp/tools/__init__.py`.
+2. Use the existing helpers from `netbox_mcp/helpers.py`
+   (`_search`, `_get_detail`, `_get_list`) — they're imported at the top
+   of each tools module.
+3. Create `search_<resource>` function with:
    - A clear docstring (purpose, accepted args, returns).
-   - `params` mapping built from `args`.
-   - Instantiate `NetBoxClient(NETBOX_URL, NETBOX_TOKEN)` and call the collection endpoint (e.g., `await client.get("dcim/example/", params)`).
-   - Return `result.get("results", [])` if result is a dict, otherwise an empty list.
-3. Create `get_<resource>_details` function with:
+   - A `mappings` dict from incoming arg name to NetBox query param name.
+   - `return await _search("dcim/example/", args, mappings)`.
+4. Create `get_<resource>_details` function with:
    - Docstring describing it accepts `id`.
-   - If `id` present: call `await client.get(f"dcim/example/{id}/")` and return `[result]` or `[]`.
-4. Run `python3 -m py_compile app.py` and fix any syntax issues.
-5. Commit only the minimal relevant changes and include a short commit message describing the resource added.
+   - If `id` present: `return await _get_detail("dcim/example/", args["id"])`.
+5. Run `python3 -m py_compile netbox_mcp/tools/<app>.py` and fix any syntax issues.
+6. Commit only the minimal relevant changes and include a short commit message describing the resource added.
 
 Examples
 --------

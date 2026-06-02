@@ -3,11 +3,15 @@
 Fork of `simonpainter/netbox-mcp` maintained at `kinghrothgar/netbox-mcp`.
 FastMCP server exposing read-only NetBox API tools.
 
+- Source lives in the `netbox_mcp/` package. Each NetBox app has its own
+  module under `netbox_mcp/tools/` (`circuits.py`, `dcim.py`, `tenancy.py`,
+  `ipam.py`, ...). Shared infra is `client.py`, `helpers.py`, `server.py`,
+  `__main__.py`.
 - `Dockerfile` is the container image build context for the homelab. Build
   with `docker build .` from this directory.
 - Consumed by the `lab` repo (`tk/lib/netbox-mcp/`), which pins the
-  published image tag. When bumping `app.py`, rebuild the image, push a new
-  tag, and bump `kinghrothgar/netbox-mcp:<tag>` in
+  published image tag. When bumping the package, rebuild the image, push a
+  new tag, and bump `kinghrothgar/netbox-mcp:<tag>` in
   `lab/tk/lib/netbox-mcp/config.libsonnet`.
 - Do not install host software. Toolchain comes from `PATH`.
 
@@ -21,14 +25,19 @@ Accepted types: `feat`, `fix`, `docs`, `chore`, `refactor`, `build`, `ci`,
 
 Mapping for this repo:
 
-- `feat` / `fix` — changes to `app.py` tool behaviour or coverage.
+- `feat` / `fix` — changes to MCP tool behaviour or coverage.
 - `chore` — dependency pin bumps, formatting sweeps.
 - `build` — `Dockerfile` changes.
-- `refactor` — `app.py` restructuring with no behaviour change.
-- `docs` — `README.md`, `AGENTS.md`, `CONTRIBUTING.md`.
+- `refactor` — package restructuring with no behaviour change.
+- `docs` — `README.md`, `AGENTS.md`, `CONTRIBUTING.md`,
+  `.github/copilot-instructions.md`.
 
-Scope is required in practice. Use `app`, `dockerfile`, `docs`, or `repo`
-(for repo-wide config like `.gitignore`).
+Scope is required in practice. Common scopes: a NetBox app name when
+changes are confined to one (`circuits`, `dcim`, `tenancy`, `ipam`,
+`virtualization`, ...); `app` when the change spans multiple tool
+modules or touches shared infra (`client.py`, `helpers.py`, `server.py`,
+`__main__.py`); `dockerfile`, `docs`, or `repo` (for repo-wide config
+like `.gitignore`).
 
 Description: imperative mood, lowercase first letter, no trailing period,
 ≤72 chars. Be specific.
