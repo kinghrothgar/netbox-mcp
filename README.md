@@ -28,34 +28,74 @@ Conceptually the flow is:
 
 > Note: The low-level HTTP path/shape is provided by the FastMCP runtime. Clients that wish to connect should use a compatible MCP client or an HTTP client that supports reading chunked / streaming responses.
 
-## Environment variables
+## Supported NetBox versions
 
-Set these before running the server:
+This server targets a specific NetBox minor release. Tools that map to
+endpoints introduced in a newer release are only registered when that
+release is selected; tools that map to endpoints removed in a newer
+release are not registered when that release is selected. Currently
+supported targets:
 
-- `NETBOX_URL` - Base URL to your NetBox instance (default: `https://netbox.example.com`).
-- `NETBOX_TOKEN` - NetBox API token with read permissions.
-- `MCP_HOST` - Address the FastMCP HTTP transport binds to. Defaults to `0.0.0.0`.
-- `MCP_PORT` - Port for the FastMCP HTTP transport. Defaults to `8000` if not set. If the value is not a valid integer, the server will exit with an error.
+- `4.5`
+- `4.6` (default)
 
-Example (macOS / zsh):
+The selected version is logged to stderr at startup.
 
-```bash
-export NETBOX_URL="https://netbox.example.com"
-export NETBOX_TOKEN="0123456789abcdef0123456789abcdef01234567"
-export MCP_HOST=0.0.0.0
-export MCP_PORT=8000
-```
+Notable version-gated additions on 4.6:
+
+- `search_rack_groups` / `get_rack_group_details` (`dcim/rack-groups/`)
+- `search_cable_bundles` / `get_cable_bundle_details` (`dcim/cable-bundles/`)
+- `search_virtual_machine_types` / `get_virtual_machine_type_details`
+  (`virtualization/virtual-machine-types/`)
+- `virtual_machine_type` filter on `search_virtual_machines`
+- `role` filter on `search_asns`
+
+## Configuration
+
+Every runtime knob can be set via either a CLI flag or an environment
+variable. Precedence is **CLI flag > env var > built-in default**.
+
+| CLI flag            | Env var          | Default                       | Description                                                                |
+| ------------------- | ---------------- | ----------------------------- | -------------------------------------------------------------------------- |
+| `--netbox-version`  | `NETBOX_VERSION` | `4.6`                         | Target NetBox minor version (`4.5` or `4.6`).                              |
+| `--netbox-url`      | `NETBOX_URL`     | `https://netbox.example.com`  | Base URL of the NetBox instance.                                           |
+| `--netbox-token`    | `NETBOX_TOKEN`   | *(empty)*                     | NetBox API token with read permissions. See security note below.           |
+| `--mcp-host`        | `MCP_HOST`       | `0.0.0.0`                     | Address the FastMCP HTTP transport binds to.                               |
+| `--mcp-port`        | `MCP_PORT`       | `8000`                        | Port for the FastMCP HTTP transport. Must be an integer.                   |
+
+Run `python3 -m netbox_mcp --help` to see the resolved defaults at
+invocation time (env vars already in scope appear as the default).
+
+### Security note on `--netbox-token`
+
+The CLI flag exists for ad-hoc and debugging use. Command-line
+arguments are visible in `ps`, `/proc/<pid>/cmdline`, shell history, and
+container runtime metadata. For real deployments prefer `NETBOX_TOKEN`
+via `docker run --env-file`, a Kubernetes Secret, systemd
+`EnvironmentFile=`, or an equivalent mechanism.
 
 ## Run the server
 
-Start the MCP server with Python:
-
 ```bash
+# Env-var style (recommended for deployments)
+export NETBOX_URL="https://netbox.example.com"
+export NETBOX_TOKEN="0123456789abcdef0123456789abcdef01234567"
+export NETBOX_VERSION=4.6
+export MCP_HOST=0.0.0.0
+export MCP_PORT=8000
 python3 -m netbox_mcp
+
+# CLI-flag style (handy for one-off runs)
+python3 -m netbox_mcp \
+    --netbox-url https://netbox.example.com \
+    --netbox-token 0123456789abcdef0123456789abcdef01234567 \
+    --netbox-version 4.5 \
+    --mcp-host 0.0.0.0 \
+    --mcp-port 8000
 ```
 
-The server will bind to `$MCP_HOST` (default `0.0.0.0`) on the configured
-port and serve the FastMCP HTTP transport.
+The server binds to the resolved `--mcp-host` / `--mcp-port` and serves
+the FastMCP HTTP transport.
 
 For local development, `make build-dev` builds the container image and
 `make run-dev` runs it with `--network host` so the container inherits
