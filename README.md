@@ -116,6 +116,21 @@ Examples:
 
 You can add more tools following the repository conventions: each NetBox resource has a `search_<resource>` and `get_<resource>_details` tool.
 
+## Tool response shape
+
+All tools return a dict envelope rather than a bare list, so MCP clients
+receive `structured_content` over the wire even when results are empty:
+
+- `search_*` tools: `{"count": int, "results": [...]}`.
+- `get_*_details` tools: `{"results": [obj]}` or `{"results": []}` when
+  the id is missing / unknown.
+- `get_*_available_*` and similar list sub-resources (`available-ips`,
+  `available-prefixes`, `available-asns`, `available-vlans`):
+  `{"results": [...]}`.
+- Action endpoints (`get_*_trace`, `get_rack_elevation`):
+  `{"result": <payload>}` where the payload may be a list, dict, or
+  scalar. On error, `result` is `[]`.
+
 ## Verifying / testing
 
 - Quick syntax check:
@@ -123,6 +138,19 @@ You can add more tools following the repository conventions: each NetBox resourc
 ```bash
 python3 -m py_compile netbox_mcp/__main__.py netbox_mcp/tools/*.py
 ```
+
+- Integration tests against `demo.netbox.dev`:
+
+```bash
+make test-demo
+```
+
+  This builds the dev image and the test image (`tests/Dockerfile`),
+  bootstraps a demo NetBox account on first run (cached in
+  `.netbox-demo-creds.json`, mode 0600), spins up the netbox-mcp
+  container, and runs the pytest suite against it. The harness picks
+  the highest supported target version that the demo's `/api/status/`
+  reports.
 
 - Start the server and use an HTTP client that supports streaming (for example, `curl --no-buffer` or a custom MCP client) to connect to the FastMCP HTTP transport and invoke tools.
 

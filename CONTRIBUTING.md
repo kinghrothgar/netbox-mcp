@@ -6,7 +6,7 @@ Thank you for your interest in contributing to the NetBox MCP Server project!
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/simonpainter/netbox-mcp.git
+   git clone https://github.com/kinghrothgar/netbox-mcp.git
    cd netbox-mcp
    ```
 
@@ -19,6 +19,8 @@ Thank you for your interest in contributing to the NetBox MCP Server project!
    ```bash
    export NETBOX_URL="https://netbox.example.com"
    export NETBOX_TOKEN="your-api-token"
+   export NETBOX_VERSION=4.6
+   export MCP_HOST=0.0.0.0
    export MCP_PORT=8000
    ```
 
@@ -35,10 +37,10 @@ This repository follows specific conventions for adding NetBox MCP tools. **Plea
 ### Quick Summary
 
 - Each NetBox resource must have two tools: `search_<resource>` and `get_<resource>_details`
-- Tools are organized one module per NetBox app under `netbox_mcp/tools/` (`circuits.py`, `dcim.py`, `ipam.py`, ...)
+- Tools are organized one module per NetBox app under `netbox_mcp/tools/` (`circuits.py`, `core.py`, `dcim.py`, `extras.py`, `ipam.py`, `tenancy.py`, `virtualization.py`, `vpn.py`, `wireless.py`)
 - All tools require descriptive docstrings with clear parameter documentation
-- Use the helper functions `_search()`, `_get_detail()`, and `_get_list()` (defined in `netbox_mcp/helpers.py`) to reduce code duplication
-- Return structured JSON objects (no human-readable messages in responses)
+- Use the helper functions `_search()`, `_get_detail()`, `_get_list()`, and `_get_action()` (defined in `netbox_mcp/helpers.py`) to reduce code duplication
+- Return structured JSON objects (no human-readable messages in responses). Every helper returns a dict envelope (`{"count", "results"}`, `{"results": [...]}`, or `{"result": ...}`) rather than a bare list so FastMCP emits `structured_content` even on empty results
 
 ### Adding a New Resource
 
@@ -54,7 +56,7 @@ For detailed step-by-step instructions, see the "How to add a new resource (step
 ## Code Style
 
 - Follow Python conventions (PEP 8)
-- Use type hints: `async def func(args: Dict[str, Any]) -> List[Dict[str, Any]]`
+- Use type hints: `async def func(args: Dict[str, Any]) -> Dict[str, Any]` (every tool returns an envelope dict, not a bare list)
 - Keep functions focused and single-purpose
 - Include comprehensive docstrings for all tools
 
@@ -63,8 +65,9 @@ For detailed step-by-step instructions, see the "How to add a new resource (step
 Before submitting a PR:
 
 1. Run syntax check: `python3 -m py_compile netbox_mcp/__main__.py netbox_mcp/tools/*.py`
-2. Test with your NetBox instance to verify tools work correctly
-3. Verify parameter mapping matches NetBox API expectations
+2. Run the integration suite against `demo.netbox.dev`: `make test-demo`
+3. Test with your NetBox instance to verify tools work correctly
+4. Verify parameter mapping matches NetBox API expectations
 
 ## Questions or Issues?
 
