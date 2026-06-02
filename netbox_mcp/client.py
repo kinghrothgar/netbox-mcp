@@ -110,6 +110,28 @@ async def _close_shared_client() -> None:
         _shared_http_client = None
 
 
+# Prefix NetBox uses for v2 API tokens. See users/constants.py upstream.
+_V2_TOKEN_PREFIX = "nbt_"
+
+
+def _build_auth_header(token: str) -> str:
+    """Pick the right ``Authorization`` header form for ``token``.
+
+    NetBox supports two token formats:
+
+    * v1 (legacy 40-char plaintext): sent as ``Token <plaintext>``.
+    * v2 (introduced in 4.6): sent as ``Bearer nbt_<key>.<plaintext>``.
+
+    Callers pass whatever string NetBox handed them when the token was
+    created. v2 tokens are stored as ``nbt_<key>.<plaintext>`` by the
+    NetBox UI (the token detail page shows them already prefixed), so
+    if the token starts with ``nbt_`` we treat it as v2; otherwise v1.
+    """
+    if token.startswith(_V2_TOKEN_PREFIX):
+        return f"Bearer {token}"
+    return f"Token {token}"
+
+
 class NetBoxClient:
     """Async NetBox API client"""
 
@@ -117,7 +139,7 @@ class NetBoxClient:
         self.base_url = base_url.rstrip('/')
         self.token = token
         self.headers = {
-            "Authorization": f"Token {token}",
+            "Authorization": _build_auth_header(token),
             "Content-Type": "application/json",
             "Accept": "application/json"
         }
