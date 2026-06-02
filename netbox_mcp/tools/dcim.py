@@ -1972,58 +1972,6 @@ async def get_virtual_device_context_details(args: Dict[str, Any]) -> List[Dict[
     return await _get_detail("dcim/virtual-device-contexts/", args["id"], args)
 
 
-# dcim/rack-groups
-
-@mcp.tool(
-    annotations={
-        "title": "Search Rack Groups",
-        "readOnlyHint": True,
-        "openWorldHint": True
-    }
-)
-async def search_rack_groups(args: Dict[str, Any]) -> Dict[str, Any]:
-    """Search rack groups (dcim/rack-groups/).
-    Accepts: name, slug, parent, ancestor, q, tag, limit
-        name: Name of the rack group (case-insensitive contains match)
-        slug: Rack group slug (exact match)
-        parent: Parent rack group ID
-        ancestor: Ancestor rack group ID (any depth)
-        q: Free-text search across name and description
-        tag: Tag slug (single)
-        limit: Maximum number of results to return (default 10)
-
-    Returns `{count, results}` (NetBox total + page). Default `brief=true`
-    for compact rack group objects; pass `brief=false` for full objects. Use
-    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
-    """
-    mappings = {
-        "name": "name__ic",
-        "slug": "slug",
-        "parent": "parent_id",
-        "ancestor": "ancestor_id",
-        "q": "q",
-        "tag": "tag",
-    }
-    return await _search("dcim/rack-groups/", args, mappings)
-
-
-@mcp.tool(
-    annotations={
-        "title": "Get Rack Group Details",
-        "readOnlyHint": True,
-        "openWorldHint": True
-    }
-)
-async def get_rack_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """Get rack group by ID (dcim/rack-groups/{id}/).
-    Accepts: id (required)
-        id: Numeric ID of the rack group to fetch. Returns `[obj]` or `[]`.
-    """
-    if "id" not in args:
-        return []
-    return await _get_detail("dcim/rack-groups/", args["id"], args)
-
-
 # dcim/cable-terminations
 
 @mcp.tool(
@@ -2072,52 +2020,6 @@ async def get_cable_termination_details(args: Dict[str, Any]) -> List[Dict[str, 
     if "id" not in args:
         return []
     return await _get_detail("dcim/cable-terminations/", args["id"], args)
-
-
-# dcim/cable-bundles (NetBox v4.6+)
-
-@mcp.tool(
-    annotations={
-        "title": "Search Cable Bundles",
-        "readOnlyHint": True,
-        "openWorldHint": True
-    }
-)
-async def search_cable_bundles(args: Dict[str, Any]) -> Dict[str, Any]:
-    """Search cable bundles (dcim/cable-bundles/).
-    Accepts: name, q, tag, limit
-        name: Name of the cable bundle (case-insensitive contains match)
-        q: Free-text search across name and description
-        tag: Tag slug (single)
-        limit: Maximum number of results to return (default 10)
-
-    Returns `{count, results}` (NetBox total + page). Default `brief=true`
-    for compact cable bundle objects; pass `brief=false` for full objects. Use
-    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
-    """
-    mappings = {
-        "name": "name__ic",
-        "q": "q",
-        "tag": "tag",
-    }
-    return await _search("dcim/cable-bundles/", args, mappings)
-
-
-@mcp.tool(
-    annotations={
-        "title": "Get Cable Bundle Details",
-        "readOnlyHint": True,
-        "openWorldHint": True
-    }
-)
-async def get_cable_bundle_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """Get cable bundle by ID (dcim/cable-bundles/{id}/).
-    Accepts: id (required)
-        id: Numeric ID of the cable bundle to fetch. Returns `[obj]` or `[]`.
-    """
-    if "id" not in args:
-        return []
-    return await _get_detail("dcim/cable-bundles/", args["id"], args)
 
 
 # --- dcim action endpoints (cable trace, rack elevation, rendered config) ---
