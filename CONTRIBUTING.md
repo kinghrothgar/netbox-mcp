@@ -4,30 +4,32 @@ Thank you for your interest in contributing to the NetBox MCP Server project!
 
 ## Getting Started
 
+The development workflow is fully containerised. You need `git`,
+`docker` (with `buildx`), and `make` on the host — nothing else. Do
+not `pip install` anything locally; the toolchain lives in the dev
+image.
+
 1. **Clone the repository**
    ```bash
    git clone https://github.com/kinghrothgar/netbox-mcp.git
    cd netbox-mcp
    ```
 
-2. **Install dependencies**
+2. **Configure environment variables**
+   Copy `.env.sample` to `.env` and fill in your NetBox URL and token.
+   The `Makefile` reads `.env` and passes it to the dev container via
+   `--env-file`:
+
    ```bash
-   pip install fastmcp httpx
+   cp .env.sample .env
+   # edit .env: NETBOX_URL, NETBOX_TOKEN, optionally NETBOX_VERSION,
+   # MCP_HOST, MCP_PORT
    ```
 
-3. **Set up environment variables**
+3. **Build and run the dev image**
    ```bash
-   export NETBOX_URL="https://netbox.example.com"
-   export NETBOX_TOKEN="your-api-token"
-   export NETBOX_VERSION=4.6
-   export MCP_HOST=0.0.0.0
-   export MCP_PORT=8000
-   ```
-
-4. **Test your setup**
-   ```bash
-   python3 -m py_compile netbox_mcp/__main__.py netbox_mcp/tools/*.py
-   python3 -m netbox_mcp
+   make build-dev   # build kinghrothgar/netbox-mcp:dev
+   make run-dev     # run it with --network host and your .env
    ```
 
 ## Development Guidelines
@@ -47,9 +49,8 @@ This repository follows specific conventions for adding NetBox MCP tools. **Plea
 1. Identify the NetBox API endpoint and open the corresponding module in `netbox_mcp/tools/<app>.py` (create one if the app doesn't have a module yet, and import it from `netbox_mcp/tools/__init__.py`)
 2. Create `search_<resource>` function with proper docstring and parameter mapping
 3. Create `get_<resource>_details` function for single object lookup
-4. Run syntax check: `python3 -m py_compile netbox_mcp/tools/<app>.py`
-5. Test your changes with a running NetBox instance
-6. Commit with a clear message describing what was added
+4. Verify your changes by running `make test-demo` (see [Testing](#testing) below). This spins up the dev image inside a throwaway test container and runs pytest against `demo.netbox.dev`; any syntax error or broken tool surfaces there.
+5. Commit with a clear message describing what was added
 
 For detailed step-by-step instructions, see the "How to add a new resource (step-by-step)" section in [`.github/copilot-instructions.md`](.github/copilot-instructions.md).
 
@@ -62,12 +63,27 @@ For detailed step-by-step instructions, see the "How to add a new resource (step
 
 ## Testing
 
+All testing happens inside Docker via the `Makefile`. Do not invoke
+`pytest`, `python3`, or `pip` on the host directly.
+
 Before submitting a PR:
 
-1. Run syntax check: `python3 -m py_compile netbox_mcp/__main__.py netbox_mcp/tools/*.py`
-2. Run the integration suite against `demo.netbox.dev`: `make test-demo`
-3. Test with your NetBox instance to verify tools work correctly
-4. Verify parameter mapping matches NetBox API expectations
+1. Run the integration suite against `demo.netbox.dev`:
+   ```bash
+   make test-demo
+   ```
+   This builds the dev image (`make build-dev`) and the test image
+   (`tests/Dockerfile`), bootstraps a demo NetBox account on first run
+   (cached in `.netbox-demo-creds.json`, mode 0600), spins up the
+   netbox-mcp container, and runs the pytest suite against it. The
+   harness picks the highest supported target version that the demo's
+   `/api/status/` reports.
+2. (Optional) Smoke-test the running server against your own NetBox by
+   pointing `.env` at it and running `make run-dev`, then connecting
+   with any MCP client over the FastMCP HTTP transport.
+3. Verify parameter mapping matches NetBox API expectations by
+   inspecting the relevant NetBox API reference and matching the
+   `mappings` dict in your `search_*` tool.
 
 ## Questions or Issues?
 
