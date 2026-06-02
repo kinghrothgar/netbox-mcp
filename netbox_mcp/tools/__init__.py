@@ -6,4 +6,4 @@ effect (registering tools on the shared `mcp` instance from
 and importing it here.
 """
 
-from . import circuits, dcim, ipam, tenancy  # noqa: F401
+from . import circuits, dcim, ipam, tenancy, virtualization  # noqa: F401
