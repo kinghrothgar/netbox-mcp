@@ -1,17 +1,63 @@
-"""Shared NetBox HTTP client and environment configuration."""
+"""Shared NetBox HTTP client and credential configuration.
+
+NetBox URL and API token are owned by this module but populated by the
+entry point (:mod:`netbox_mcp.__main__`) via :func:`set_netbox_credentials`
+after CLI args / environment variables have been resolved. Helpers
+retrieve them per-call via :func:`get_netbox_credentials`, which raises
+loudly if the entry point hasn't run. This avoids snapshotting env vars
+at import time, which would make ``--netbox-url`` / ``--netbox-token``
+ineffective.
+"""
 
 import asyncio
-import os
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple
 from urllib.parse import urljoin
 
 import httpx
 
 
-# Configuration for NetBox API client
+# NetBox credentials. Populated by :func:`set_netbox_credentials` from
+# :mod:`netbox_mcp.__main__` before tool modules are imported.
+_netbox_url: Optional[str] = None
+_netbox_token: Optional[str] = None
 
-NETBOX_URL = os.getenv("NETBOX_URL", "https://netbox.example.com")
-NETBOX_TOKEN = os.getenv("NETBOX_TOKEN", "")
+
+def set_netbox_credentials(url: str, token: str) -> None:
+    """Store the NetBox base URL and API token for use by helpers.
+
+    Must be called before any tool runs. The entry point invokes this
+    after argparse resolution (CLI flag > env var > default). ``token``
+    may be the empty string for unauthenticated read access; ``url``
+    must be a non-empty string.
+    """
+    global _netbox_url, _netbox_token
+    if not isinstance(url, str) or not url:
+        raise ValueError("NetBox URL must be a non-empty string")
+    if not isinstance(token, str):
+        raise ValueError("NetBox token must be a string (may be empty)")
+    _netbox_url = url
+    _netbox_token = token
+
+
+def get_netbox_credentials() -> Tuple[str, str]:
+    """Return ``(url, token)`` previously stored by :func:`set_netbox_credentials`.
+
+    Raises :class:`RuntimeError` if credentials have not been set. The
+    package's entry point is responsible for calling
+    :func:`set_netbox_credentials`; importing tool modules without
+    going through it (e.g. ``python -c "from netbox_mcp.tools import dcim"``)
+    will fail here rather than silently using stale or missing env vars.
+    """
+    if _netbox_url is None or _netbox_token is None:
+        raise RuntimeError(
+            "NetBox credentials are not configured. Run the server via "
+            "`python -m netbox_mcp` (which resolves --netbox-url / "
+            "--netbox-token or the NETBOX_URL / NETBOX_TOKEN env vars), "
+            "or call netbox_mcp.client.set_netbox_credentials(url, token) "
+            "directly before invoking any tool."
+        )
+    return _netbox_url, _netbox_token
+
 
 # Shared HTTP client to avoid creating multiple clients concurrently
 # This prevents "unhandled errors in a TaskGroup" when multiple tools run simultaneously

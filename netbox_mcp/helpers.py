@@ -23,7 +23,7 @@ of a bare list so the LLM knows whether to refine filters or page through.
 
 from typing import Any, Dict, Iterable, List, Optional, Union
 
-from .client import NETBOX_TOKEN, NETBOX_URL, NetBoxClient
+from .client import NetBoxClient, get_netbox_credentials
 
 # Hard ceiling for `limit` to guard against accidental large dumps.
 MAX_LIMIT = 100
@@ -107,7 +107,7 @@ async def _search(
     if args.get("brief", True):
         params["brief"] = "true"
 
-    netbox_client = NetBoxClient(NETBOX_URL, NETBOX_TOKEN)
+    netbox_client = NetBoxClient(*get_netbox_credentials())
     result = await netbox_client.get(endpoint, params)
     return {
         "count": result.get("count", 0),
@@ -141,7 +141,7 @@ async def _get_detail(endpoint_base: str, id_value: Any, args: Optional[Dict[str
     # offset has no meaning on detail endpoints; drop it silently.
     params.pop("offset", None)
 
-    netbox_client = NetBoxClient(NETBOX_URL, NETBOX_TOKEN)
+    netbox_client = NetBoxClient(*get_netbox_credentials())
     try:
         result = await netbox_client.get(
             f"{endpoint_base}{id_value}/",
@@ -174,7 +174,7 @@ async def _get_action(endpoint: str, args: Optional[Dict[str, Any]] = None) -> A
     _apply_common_args(args, params)
     params.pop("offset", None)
 
-    netbox_client = NetBoxClient(NETBOX_URL, NETBOX_TOKEN)
+    netbox_client = NetBoxClient(*get_netbox_credentials())
     try:
         return await netbox_client.get(endpoint, params or None)
     except Exception:
@@ -190,7 +190,7 @@ async def _get_list(endpoint: str, args: Dict[str, Any], default_limit: int = 10
     """
     params: Dict[str, Any] = {"limit": _capped_limit(args, default_limit)}
     _apply_common_args(args, params)
-    netbox_client = NetBoxClient(NETBOX_URL, NETBOX_TOKEN)
+    netbox_client = NetBoxClient(*get_netbox_credentials())
     try:
         result = await netbox_client.get(endpoint, params)
         return result if isinstance(result, list) else []
