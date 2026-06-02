@@ -3820,6 +3820,8 @@ async def get_service_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 if __name__ == "__main__":
+    host = os.getenv("MCP_HOST", "0.0.0.0")
+
     port_env = os.getenv("MCP_PORT")
     if port_env is None:
         port = 8000
@@ -3829,4 +3831,4 @@ if __name__ == "__main__":
         except ValueError:
             raise SystemExit(f"Invalid MCP_PORT value: {port_env} - must be an integer")
 
-    mcp.run(transport="http", host="0.0.0.0", port=port)
+    mcp.run(transport="http", host=host, port=port)

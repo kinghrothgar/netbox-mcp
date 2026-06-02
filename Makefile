@@ -16,5 +16,5 @@ build-dev:
 run-dev:
 	docker run --rm -it \
 		--env-file $(ENV_FILE) \
-		-p 127.0.0.1:$(MCP_PORT):$(MCP_PORT) \
+		--network host \
 		$(IMAGE):$(TAG)
