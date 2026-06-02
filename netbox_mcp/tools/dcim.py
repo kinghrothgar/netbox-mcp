@@ -2181,25 +2181,6 @@ async def get_rack_elevation(args: Dict[str, Any]) -> Any:
     return await _get_action(f"dcim/racks/{args['id']}/elevation/", args)
 
 
-# dcim/devices/{id}/render-config
-
-@mcp.tool(
-    annotations={
-        "title": "Get Device Rendered Config",
-        "readOnlyHint": True,
-        "openWorldHint": True
-    }
-)
-async def get_device_rendered_config(args: Dict[str, Any]) -> Any:
-    """Render a device's assigned config template (dcim/devices/{id}/render-config/).
-    Accepts: id (required), format
-        id: Numeric ID of the device.
-        format: 'json' or 'txt' (NetBox default depends on Accept header)
-
-    Returns the rendered configuration text/JSON, or `[]` on error.
-    Only works for devices with an assigned `config_template`.
-    """
-    if "id" not in args:
-        return []
-    return await _get_action(f"dcim/devices/{args['id']}/render-config/", args)
+# dcim/devices/{id}/render-config is POST-only in NetBox and requires a body;
+# our read-only _get_action helper can't reach it. Intentionally not exposed.
 
