@@ -28,7 +28,7 @@ image.
 
 3. **Build and run the dev image**
    ```bash
-   make build-dev   # build kinghrothgar/netbox-mcp:dev
+   make build-dev   # build netbox-mcp:dev
    make run-dev     # run it with --network host and your .env
    ```
 

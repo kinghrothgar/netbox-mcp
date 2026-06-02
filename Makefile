@@ -1,4 +1,4 @@
-IMAGE      ?= kinghrothgar/netbox-mcp
+IMAGE      ?= netbox-mcp
 TAG        ?= dev
 TEST_IMAGE ?= netbox-mcp-test:dev
 ENV_FILE   ?= .env

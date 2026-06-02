@@ -32,7 +32,7 @@ from tests.bootstrap import (
 
 
 # Image tag the prod Dockerfile is built under (see Makefile).
-NETBOX_MCP_IMAGE = os.getenv("NETBOX_MCP_IMAGE", "kinghrothgar/netbox-mcp:dev")
+NETBOX_MCP_IMAGE = os.getenv("NETBOX_MCP_IMAGE", "netbox-mcp:dev")
 
 # Versions of NetBox this package can target. Mirrors
 # netbox_mcp.version.SUPPORTED_NETBOX_VERSIONS but duplicated here so
