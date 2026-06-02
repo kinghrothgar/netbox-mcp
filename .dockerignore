@@ -1,0 +1,11 @@
+.git
+.env
+.env.*
+!.env.sample
+Makefile
+opencode.json
+README.md
+AGENTS.md
+CONTRIBUTING.md
+.github
+__pycache__
