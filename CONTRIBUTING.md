@@ -32,6 +32,15 @@ image.
    make run-dev     # run it with --network host and your .env
    ```
 
+### opencode integration
+
+The repo ships an `opencode.json` at the root that registers the
+locally-running dev server as an MCP backend at
+`http://127.0.0.1:8000/mcp/`. If you run `opencode` from the repo
+directory after `make run-dev`, the agent picks up the `netbox`
+MCP automatically — no extra wiring needed. Change the URL if you
+override `MCP_HOST` / `MCP_PORT` in `.env`.
+
 ## Development Guidelines
 
 This repository follows specific conventions for adding NetBox MCP tools. **Please read the detailed guidelines in [`.github/copilot-instructions.md`](.github/copilot-instructions.md)** before contributing.
