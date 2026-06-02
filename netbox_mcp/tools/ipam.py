@@ -4,6 +4,7 @@ from typing import Any, Dict, List
 
 from ..helpers import _get_detail, _get_list, _search
 from ..server import mcp
+from ..version import is_at_least
 
 
 # --- ipam (vrfs, prefixes, ip-addresses, vlans, etc.) ---
@@ -685,12 +686,13 @@ async def get_fhrp_group_assignment_details(args: Dict[str, Any]) -> List[Dict[s
 )
 async def search_asns(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search ASNs (ipam/asns/).
-    Accepts: asn, rir, site, tenant, provider, tag, q, limit
+    Accepts: asn, rir, site, tenant, provider, role (NetBox 4.6+), tag, q, limit
         asn: ASN number (exact match)
         rir: RIR ID or slug
         site: Site ID or slug
         tenant: Tenant ID or slug
         provider: Provider ID or slug
+        role: IPAM role ID or slug (NetBox 4.6+; ignored on older releases)
         tag: Tag slug (single)
         q: Free-text search across description and asn
         limit: Maximum number of results to return (default 10)
@@ -708,6 +710,10 @@ async def search_asns(args: Dict[str, Any]) -> Dict[str, Any]:
         "tag": "tag",
         "q": "q",
     }
+    # ASNs gained a `role` foreign key in NetBox 4.6 (issue #17654). The
+    # filter does not exist on 4.5, so only forward it when targeting 4.6+.
+    if is_at_least(4, 6):
+        mappings["role"] = "role"
     return await _search("ipam/asns/", args, mappings)
 
 

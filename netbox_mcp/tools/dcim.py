@@ -4,6 +4,7 @@ from typing import Any, Dict, List
 
 from ..helpers import _get_action, _get_detail, _get_list, _search
 from ..server import mcp
+from ..version import version_gated_tool
 
 
 # --- dcim (sites, site-groups, devices, etc.) ---
@@ -1660,6 +1661,63 @@ async def get_rack_reservation_details(args: Dict[str, Any]) -> List[Dict[str, A
     return await _get_detail("dcim/rack-reservations/", args["id"], args)
 
 
+# dcim/rack-groups  (NetBox 4.6+)
+
+@version_gated_tool(
+    mcp,
+    min_version=(4, 6),
+    annotations={
+        "title": "Search Rack Groups",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def search_rack_groups(args: Dict[str, Any]) -> Dict[str, Any]:
+    """Search rack groups (dcim/rack-groups/).
+
+    Rack groups were reintroduced in NetBox 4.6 as a flat, lightweight
+    secondary axis of rack organisation (e.g. by row or aisle) that is
+    independent of the location hierarchy.
+
+    Accepts: name, slug, q, tag, limit
+        name: Name of the rack group (case-insensitive contains match)
+        slug: Rack group slug (exact match)
+        q: Free-text search
+        tag: Tag slug (single)
+        limit: Maximum number of results to return (default 10)
+
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact rack group objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
+    """
+    mappings = {
+        "name": "name__ic",
+        "slug": "slug",
+        "q": "q",
+        "tag": "tag",
+    }
+    return await _search("dcim/rack-groups/", args, mappings)
+
+
+@version_gated_tool(
+    mcp,
+    min_version=(4, 6),
+    annotations={
+        "title": "Get Rack Group Details",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def get_rack_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Get rack group by ID (dcim/rack-groups/{id}/).
+    Accepts: id (required)
+        id: Numeric ID of the rack group to fetch. Returns `[obj]` or `[]`.
+    """
+    if "id" not in args:
+        return []
+    return await _get_detail("dcim/rack-groups/", args["id"], args)
+
+
 # dcim/rack-roles
 
 @mcp.tool(
@@ -1970,6 +2028,66 @@ async def get_virtual_device_context_details(args: Dict[str, Any]) -> List[Dict[
     if "id" not in args:
         return []
     return await _get_detail("dcim/virtual-device-contexts/", args["id"], args)
+
+
+# dcim/cable-bundles  (NetBox 4.6+)
+
+@version_gated_tool(
+    mcp,
+    min_version=(4, 6),
+    annotations={
+        "title": "Search Cable Bundles",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def search_cable_bundles(args: Dict[str, Any]) -> Dict[str, Any]:
+    """Search cable bundles (dcim/cable-bundles/).
+
+    Cable bundles were introduced in NetBox 4.6 and group individual
+    cables together to represent a physical cable run managed as a unit
+    (e.g. a bundle of 48 CAT6 cables between two patch panels). They are
+    not intended to model individual fibre strands within a single cable.
+
+    Accepts: name, label, status, q, tag, limit
+        name: Name of the cable bundle (case-insensitive contains match)
+        label: Cable bundle label (case-insensitive contains match)
+        status: Status of the cable bundle (exact match)
+        q: Free-text search
+        tag: Tag slug (single)
+        limit: Maximum number of results to return (default 10)
+
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact cable bundle objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
+    """
+    mappings = {
+        "name": "name__ic",
+        "label": "label__ic",
+        "status": "status",
+        "q": "q",
+        "tag": "tag",
+    }
+    return await _search("dcim/cable-bundles/", args, mappings)
+
+
+@version_gated_tool(
+    mcp,
+    min_version=(4, 6),
+    annotations={
+        "title": "Get Cable Bundle Details",
+        "readOnlyHint": True,
+        "openWorldHint": True
+    }
+)
+async def get_cable_bundle_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Get cable bundle by ID (dcim/cable-bundles/{id}/).
+    Accepts: id (required)
+        id: Numeric ID of the cable bundle to fetch. Returns `[obj]` or `[]`.
+    """
+    if "id" not in args:
+        return []
+    return await _get_detail("dcim/cable-bundles/", args["id"], args)
 
 
 # dcim/cable-terminations

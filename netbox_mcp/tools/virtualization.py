@@ -4,6 +4,7 @@ from typing import Any, Dict, List
 
 from ..helpers import _get_detail, _get_list, _search  # noqa: F401
 from ..server import mcp
+from ..version import is_at_least, version_gated_tool
 
 
 # --- virtualization (clusters, virtual machines, etc.) ---
@@ -173,9 +174,11 @@ async def get_cluster_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     return await _get_detail("virtualization/clusters/", args["id"], args)
 
 
-# virtualization/virtual-machine-types
+# virtualization/virtual-machine-types  (NetBox 4.6+)
 
-@mcp.tool(
+@version_gated_tool(
+    mcp,
+    min_version=(4, 6),
     annotations={
         "title": "Search Virtual Machine Types",
         "readOnlyHint": True,
@@ -206,7 +209,9 @@ async def search_virtual_machine_types(args: Dict[str, Any]) -> Dict[str, Any]:
     return await _search("virtualization/virtual-machine-types/", args, mappings)
 
 
-@mcp.tool(
+@version_gated_tool(
+    mcp,
+    min_version=(4, 6),
     annotations={
         "title": "Get Virtual Machine Type Details",
         "readOnlyHint": True,
@@ -236,9 +241,11 @@ async def search_virtual_machines(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search virtual machines (virtualization/virtual-machines/).
     Accepts: name, cluster, cluster_group, cluster_type, device, site, region,
              site_group, tenant, role, platform, status, mac_address,
-             has_primary_ip, virtual_machine_type, config_template, q, tag, limit
+             has_primary_ip, virtual_machine_type (NetBox 4.6+),
+             config_template, q, tag, limit
         name: Name of the virtual machine (case-insensitive contains match)
-        cluster: Cluster ID or name
+        cluster: Cluster ID or name (optional on NetBox 4.6+: a VM may be
+                 attached to a device without a cluster)
         cluster_group: Cluster group ID or slug
         cluster_type: Cluster type ID or slug
         device: Host device ID or name
@@ -252,7 +259,8 @@ async def search_virtual_machines(args: Dict[str, Any]) -> Dict[str, Any]:
                 'failed', 'decommissioning')
         mac_address: MAC address (exact match)
         has_primary_ip: Boolean - whether the VM has a primary IP assigned
-        virtual_machine_type: Virtual machine type ID or slug
+        virtual_machine_type: Virtual machine type ID or slug (NetBox 4.6+;
+                              ignored on older releases)
         config_template: Config template ID
         q: Free-text search across name, comments, and description
         tag: Tag slug (single)
@@ -277,11 +285,15 @@ async def search_virtual_machines(args: Dict[str, Any]) -> Dict[str, Any]:
         "status": "status",
         "mac_address": "mac_address",
         "has_primary_ip": "has_primary_ip",
-        "virtual_machine_type": "virtual_machine_type",
         "config_template": "config_template",
         "q": "q",
         "tag": "tag",
     }
+    # virtual_machine_type was introduced alongside the VirtualMachineType
+    # model in NetBox 4.6. Forwarding it on 4.5 would either be silently
+    # ignored or produce a confusing error; gate it explicitly.
+    if is_at_least(4, 6):
+        mappings["virtual_machine_type"] = "virtual_machine_type"
     return await _search("virtualization/virtual-machines/", args, mappings)
 
 
