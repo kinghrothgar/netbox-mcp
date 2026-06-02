@@ -19,7 +19,7 @@ from ..server import mcp
         "openWorldHint": True
     }
 )
-async def search_sites(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_sites(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search sites (dcim/sites/).
     Accepts: name, status, location, region, limit
         name: Name of the site (case-insensitive search contains)
@@ -28,7 +28,9 @@ async def search_sites(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         region: Name of the region (case-insensitive search contains)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox site objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact site objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {"name": "name__ic", "status": "status", "location": "location__ic", "region": "region__ic"}
     return await _search("dcim/sites/", args, mappings)
@@ -47,7 +49,7 @@ async def get_site_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/sites/", args["id"])
+    return await _get_detail("dcim/sites/", args["id"], args)
 
 
 @mcp.tool(
@@ -57,13 +59,15 @@ async def get_site_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_site_groups(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_site_groups(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search site groups (dcim/site-groups/).
     Accepts: name, limit
         name: Name of the site group (case-insensitive contains match)
         limit: maximum number of results to return (default 10)
 
-    Returns a list of NetBox site group objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact site group objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {"name": "name__ic"}
     return await _search("dcim/site-groups/", args, mappings)
@@ -85,7 +89,7 @@ async def get_site_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/site-groups/", args["id"])
+    return await _get_detail("dcim/site-groups/", args["id"], args)
 
 
 # dcim/cables
@@ -97,7 +101,7 @@ async def get_site_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_cables(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_cables(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search cables (dcim/cables/).
     Accepts: status, type, label, device, location, limit
         status: Status of the cable (exact match), e.g., 'connected', 'planned', 'decommissioning'
@@ -107,7 +111,9 @@ async def search_cables(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         location: Location ID (numeric)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox cable objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact cable objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "status": "status",
@@ -133,7 +139,7 @@ async def get_cable_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/cables/", args["id"])
+    return await _get_detail("dcim/cables/", args["id"], args)
 
 
 # dcim/console-ports
@@ -145,7 +151,7 @@ async def get_cable_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_console_ports(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_console_ports(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search console ports (dcim/console-ports/).
     Accepts: name, device, type, label, limit
         name: Name of the console port (case-insensitive contains match)
@@ -154,7 +160,9 @@ async def search_console_ports(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         label: Console port label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox console port objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact console port objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -179,7 +187,7 @@ async def get_console_port_details(args: Dict[str, Any]) -> List[Dict[str, Any]]
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/console-ports/", args["id"])
+    return await _get_detail("dcim/console-ports/", args["id"], args)
 
 
 # dcim/console-port-templates
@@ -191,7 +199,7 @@ async def get_console_port_details(args: Dict[str, Any]) -> List[Dict[str, Any]]
         "openWorldHint": True
     }
 )
-async def search_console_port_templates(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_console_port_templates(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search console port templates (dcim/console-port-templates/).
     Accepts: name, device_type, type, label, limit
         name: Name of the console port template (case-insensitive contains match)
@@ -200,7 +208,9 @@ async def search_console_port_templates(args: Dict[str, Any]) -> List[Dict[str, 
         label: Console port template label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox console port template objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact console port template objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -225,7 +235,7 @@ async def get_console_port_template_details(args: Dict[str, Any]) -> List[Dict[s
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/console-port-templates/", args["id"])
+    return await _get_detail("dcim/console-port-templates/", args["id"], args)
 
 
 # dcim/console-server-ports
@@ -237,7 +247,7 @@ async def get_console_port_template_details(args: Dict[str, Any]) -> List[Dict[s
         "openWorldHint": True
     }
 )
-async def search_console_server_ports(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_console_server_ports(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search console server ports (dcim/console-server-ports/).
     Accepts: name, device, type, label, limit
         name: Name of the console server port (case-insensitive contains match)
@@ -246,7 +256,9 @@ async def search_console_server_ports(args: Dict[str, Any]) -> List[Dict[str, An
         label: Console server port label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox console server port objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact console server port objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -271,7 +283,7 @@ async def get_console_server_port_details(args: Dict[str, Any]) -> List[Dict[str
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/console-server-ports/", args["id"])
+    return await _get_detail("dcim/console-server-ports/", args["id"], args)
 
 
 # dcim/console-server-port-templates
@@ -283,7 +295,7 @@ async def get_console_server_port_details(args: Dict[str, Any]) -> List[Dict[str
         "openWorldHint": True
     }
 )
-async def search_console_server_port_templates(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_console_server_port_templates(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search console server port templates (dcim/console-server-port-templates/).
     Accepts: name, device_type, type, label, limit
         name: Name of the console server port template (case-insensitive contains match)
@@ -292,7 +304,9 @@ async def search_console_server_port_templates(args: Dict[str, Any]) -> List[Dic
         label: Console server port template label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox console server port template objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact console server port template objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -317,7 +331,7 @@ async def get_console_server_port_template_details(args: Dict[str, Any]) -> List
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/console-server-port-templates/", args["id"])
+    return await _get_detail("dcim/console-server-port-templates/", args["id"], args)
 
 
 # dcim/devices
@@ -329,7 +343,7 @@ async def get_console_server_port_template_details(args: Dict[str, Any]) -> List
         "openWorldHint": True
     }
 )
-async def search_devices(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_devices(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search devices (dcim/devices/).
     Accepts: name, role, device_type, serial, asset_tag, rack, status, location, limit
         name: Name of the device (case-insensitive contains match)
@@ -342,7 +356,9 @@ async def search_devices(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         location: Location ID (numeric)
         limit: maximum number of results to return (default 10)
 
-    Returns a list of NetBox device objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact device objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -371,7 +387,7 @@ async def get_device_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/devices/", args["id"])
+    return await _get_detail("dcim/devices/", args["id"], args)
 
 
 # dcim/device-bays
@@ -383,7 +399,7 @@ async def get_device_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_device_bays(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_device_bays(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search device bays (dcim/device-bays/).
     Accepts: name, device, label, limit
         name: Name of the device bay (case-insensitive contains match)
@@ -391,7 +407,9 @@ async def search_device_bays(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         label: Device bay label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox device bay objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact device bay objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -415,7 +433,7 @@ async def get_device_bay_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/device-bays/", args["id"])
+    return await _get_detail("dcim/device-bays/", args["id"], args)
 
 
 # dcim/device-bay-templates
@@ -427,7 +445,7 @@ async def get_device_bay_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_device_bay_templates(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_device_bay_templates(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search device bay templates (dcim/device-bay-templates/).
     Accepts: name, device_type, label, limit
         name: Name of the device bay template (case-insensitive contains match)
@@ -435,7 +453,9 @@ async def search_device_bay_templates(args: Dict[str, Any]) -> List[Dict[str, An
         label: Device bay template label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox device bay template objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact device bay template objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -459,7 +479,7 @@ async def get_device_bay_template_details(args: Dict[str, Any]) -> List[Dict[str
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/device-bay-templates/", args["id"])
+    return await _get_detail("dcim/device-bay-templates/", args["id"], args)
 
 
 # dcim/device-roles
@@ -471,13 +491,15 @@ async def get_device_bay_template_details(args: Dict[str, Any]) -> List[Dict[str
         "openWorldHint": True
     }
 )
-async def search_device_roles(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_device_roles(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search device roles (dcim/device-roles/).
     Accepts: name, limit
         name: Name of the device role (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox device role objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact device role objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic"
@@ -499,7 +521,7 @@ async def get_device_role_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/device-roles/", args["id"])
+    return await _get_detail("dcim/device-roles/", args["id"], args)
 
 
 # dcim/device-types
@@ -511,14 +533,16 @@ async def get_device_role_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_device_types(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_device_types(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search device types (dcim/device-types/).
     Accepts: name, manufacturer, limit
         name: Name of the device type (case-insensitive contains match)
         manufacturer: Manufacturer ID (numeric)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox device type objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact device type objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -541,7 +565,7 @@ async def get_device_type_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/device-types/", args["id"])
+    return await _get_detail("dcim/device-types/", args["id"], args)
 
 
 # dcim/front-ports
@@ -553,7 +577,7 @@ async def get_device_type_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_front_ports(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_front_ports(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search front ports (dcim/front-ports/).
     Accepts: name, device, type, label, limit
         name: Name of the front port (case-insensitive contains match)
@@ -562,7 +586,9 @@ async def search_front_ports(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         label: Front port label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox front port objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact front port objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -587,7 +613,7 @@ async def get_front_port_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/front-ports/", args["id"])
+    return await _get_detail("dcim/front-ports/", args["id"], args)
 
 
 # dcim/front-port-templates
@@ -599,7 +625,7 @@ async def get_front_port_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_front_port_templates(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_front_port_templates(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search front port templates (dcim/front-port-templates/).
     Accepts: name, device_type, type, label, limit
         name: Name of the front port template (case-insensitive contains match)
@@ -608,7 +634,9 @@ async def search_front_port_templates(args: Dict[str, Any]) -> List[Dict[str, An
         label: Front port template label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox front port template objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact front port template objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -633,7 +661,7 @@ async def get_front_port_template_details(args: Dict[str, Any]) -> List[Dict[str
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/front-port-templates/", args["id"])
+    return await _get_detail("dcim/front-port-templates/", args["id"], args)
 
 
 # dcim/interfaces
@@ -645,7 +673,7 @@ async def get_front_port_template_details(args: Dict[str, Any]) -> List[Dict[str
         "openWorldHint": True
     }
 )
-async def search_interfaces(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_interfaces(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search interfaces (dcim/interfaces/).
     Accepts: name, device, type, label, limit
         name: Name of the interface (case-insensitive contains match)
@@ -654,7 +682,9 @@ async def search_interfaces(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         label: Interface label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox interface objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact interface objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -679,7 +709,7 @@ async def get_interface_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/interfaces/", args["id"])
+    return await _get_detail("dcim/interfaces/", args["id"], args)
 
 
 # dcim/interface-templates
@@ -691,7 +721,7 @@ async def get_interface_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_interface_templates(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_interface_templates(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search interface templates (dcim/interface-templates/).
     Accepts: name, device_type, type, label, limit
         name: Name of the interface template (case-insensitive contains match)
@@ -700,7 +730,9 @@ async def search_interface_templates(args: Dict[str, Any]) -> List[Dict[str, Any
         label: Interface template label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox interface template objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact interface template objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -725,7 +757,7 @@ async def get_interface_template_details(args: Dict[str, Any]) -> List[Dict[str,
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/interface-templates/", args["id"])
+    return await _get_detail("dcim/interface-templates/", args["id"], args)
 
 
 # dcim/inventory-items
@@ -737,7 +769,7 @@ async def get_interface_template_details(args: Dict[str, Any]) -> List[Dict[str,
         "openWorldHint": True
     }
 )
-async def search_inventory_items(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_inventory_items(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search inventory items (dcim/inventory-items/).
     Accepts: name, device, label, limit
         name: Name of the inventory item (case-insensitive contains match)
@@ -745,7 +777,9 @@ async def search_inventory_items(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         label: Inventory item label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox inventory item objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact inventory item objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -769,7 +803,7 @@ async def get_inventory_item_details(args: Dict[str, Any]) -> List[Dict[str, Any
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/inventory-items/", args["id"])
+    return await _get_detail("dcim/inventory-items/", args["id"], args)
 
 
 # dcim/inventory-item-roles
@@ -781,13 +815,15 @@ async def get_inventory_item_details(args: Dict[str, Any]) -> List[Dict[str, Any
         "openWorldHint": True
     }
 )
-async def search_inventory_item_roles(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_inventory_item_roles(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search inventory item roles (dcim/inventory-item-roles/).
     Accepts: name, limit
         name: Name of the inventory item role (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox inventory item role objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact inventory item role objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic"
@@ -809,7 +845,7 @@ async def get_inventory_item_role_details(args: Dict[str, Any]) -> List[Dict[str
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/inventory-item-roles/", args["id"])
+    return await _get_detail("dcim/inventory-item-roles/", args["id"], args)
 
 
 # dcim/inventory-item-templates
@@ -821,7 +857,7 @@ async def get_inventory_item_role_details(args: Dict[str, Any]) -> List[Dict[str
         "openWorldHint": True
     }
 )
-async def search_inventory_item_templates(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_inventory_item_templates(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search inventory item templates (dcim/inventory-item-templates/).
     Accepts: name, device_type, label, limit
         name: Name of the inventory item template (case-insensitive contains match)
@@ -829,7 +865,9 @@ async def search_inventory_item_templates(args: Dict[str, Any]) -> List[Dict[str
         label: Inventory item template label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox inventory item template objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact inventory item template objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -853,7 +891,7 @@ async def get_inventory_item_template_details(args: Dict[str, Any]) -> List[Dict
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/inventory-item-templates/", args["id"])
+    return await _get_detail("dcim/inventory-item-templates/", args["id"], args)
 
 
 # dcim/locations
@@ -865,14 +903,16 @@ async def get_inventory_item_template_details(args: Dict[str, Any]) -> List[Dict
         "openWorldHint": True
     }
 )
-async def search_locations(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_locations(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search locations (dcim/locations/).
     Accepts: name, status, limit
         name: Name of the location (case-insensitive contains match)
         status: Status of the location (exact match), e.g., 'active', 'planned', 'retired'
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox location objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact location objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -895,7 +935,7 @@ async def get_location_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/locations/", args["id"])
+    return await _get_detail("dcim/locations/", args["id"], args)
 
 
 # dcim/mac-addresses
@@ -907,14 +947,16 @@ async def get_location_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_mac_addresses(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_mac_addresses(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search MAC addresses (dcim/mac-addresses/).
     Accepts: mac_address, device, limit
         mac_address: MAC address (case-insensitive contains match)
         device: Device ID (numeric)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox MAC address objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact MAC address objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "mac_address": "mac_address__ic",
@@ -937,7 +979,7 @@ async def get_mac_address_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/mac-addresses/", args["id"])
+    return await _get_detail("dcim/mac-addresses/", args["id"], args)
 
 
 # dcim/manufacturers
@@ -949,13 +991,15 @@ async def get_mac_address_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_manufacturers(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_manufacturers(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search manufacturers (dcim/manufacturers/).
     Accepts: name, limit
         name: Name of the manufacturer (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox manufacturer objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact manufacturer objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic"
@@ -977,7 +1021,7 @@ async def get_manufacturer_details(args: Dict[str, Any]) -> List[Dict[str, Any]]
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/manufacturers/", args["id"])
+    return await _get_detail("dcim/manufacturers/", args["id"], args)
 
 
 # dcim/modules
@@ -989,14 +1033,16 @@ async def get_manufacturer_details(args: Dict[str, Any]) -> List[Dict[str, Any]]
         "openWorldHint": True
     }
 )
-async def search_modules(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_modules(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search modules (dcim/modules/).
     Accepts: device, status, limit
         device: Device ID (numeric)
         status: Status of the module (exact match), e.g., 'active', 'planned', 'offline'
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox module objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact module objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "device": "device_id",
@@ -1019,7 +1065,7 @@ async def get_module_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/modules/", args["id"])
+    return await _get_detail("dcim/modules/", args["id"], args)
 
 
 # dcim/module-bays
@@ -1031,7 +1077,7 @@ async def get_module_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_module_bays(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_module_bays(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search module bays (dcim/module-bays/).
     Accepts: name, device, label, limit
         name: Name of the module bay (case-insensitive contains match)
@@ -1039,7 +1085,9 @@ async def search_module_bays(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         label: Module bay label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox module bay objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact module bay objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1063,7 +1111,7 @@ async def get_module_bay_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/module-bays/", args["id"])
+    return await _get_detail("dcim/module-bays/", args["id"], args)
 
 
 # dcim/module-bay-templates
@@ -1075,7 +1123,7 @@ async def get_module_bay_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_module_bay_templates(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_module_bay_templates(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search module bay templates (dcim/module-bay-templates/).
     Accepts: name, device_type, label, limit
         name: Name of the module bay template (case-insensitive contains match)
@@ -1083,7 +1131,9 @@ async def search_module_bay_templates(args: Dict[str, Any]) -> List[Dict[str, An
         label: Module bay template label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox module bay template objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact module bay template objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1107,7 +1157,7 @@ async def get_module_bay_template_details(args: Dict[str, Any]) -> List[Dict[str
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/module-bay-templates/", args["id"])
+    return await _get_detail("dcim/module-bay-templates/", args["id"], args)
 
 
 # dcim/module-types
@@ -1119,14 +1169,16 @@ async def get_module_bay_template_details(args: Dict[str, Any]) -> List[Dict[str
         "openWorldHint": True
     }
 )
-async def search_module_types(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_module_types(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search module types (dcim/module-types/).
     Accepts: name, manufacturer, limit
         name: Name of the module type (case-insensitive contains match)
         manufacturer: Manufacturer ID (numeric)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox module type objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact module type objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1149,7 +1201,7 @@ async def get_module_type_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/module-types/", args["id"])
+    return await _get_detail("dcim/module-types/", args["id"], args)
 
 
 # dcim/module-type-profiles
@@ -1161,13 +1213,15 @@ async def get_module_type_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_module_type_profiles(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_module_type_profiles(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search module type profiles (dcim/module-type-profiles/).
     Accepts: name, limit
         name: Name of the module type profile (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox module type profile objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact module type profile objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic"
@@ -1189,7 +1243,7 @@ async def get_module_type_profile_details(args: Dict[str, Any]) -> List[Dict[str
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/module-type-profiles/", args["id"])
+    return await _get_detail("dcim/module-type-profiles/", args["id"], args)
 
 
 # dcim/platforms
@@ -1201,14 +1255,16 @@ async def get_module_type_profile_details(args: Dict[str, Any]) -> List[Dict[str
         "openWorldHint": True
     }
 )
-async def search_platforms(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_platforms(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search platforms (dcim/platforms/).
     Accepts: name, manufacturer, limit
         name: Name of the platform (case-insensitive contains match)
         manufacturer: Manufacturer ID (numeric)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox platform objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact platform objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1231,7 +1287,7 @@ async def get_platform_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/platforms/", args["id"])
+    return await _get_detail("dcim/platforms/", args["id"], args)
 
 
 # dcim/power-feeds
@@ -1243,7 +1299,7 @@ async def get_platform_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_power_feeds(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_power_feeds(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search power feeds (dcim/power-feeds/).
     Accepts: name, status, type, limit
         name: Name of the power feed (case-insensitive contains match)
@@ -1251,7 +1307,9 @@ async def search_power_feeds(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         type: Power feed type (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox power feed objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact power feed objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1275,7 +1333,7 @@ async def get_power_feed_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/power-feeds/", args["id"])
+    return await _get_detail("dcim/power-feeds/", args["id"], args)
 
 
 # dcim/power-outlets
@@ -1287,7 +1345,7 @@ async def get_power_feed_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_power_outlets(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_power_outlets(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search power outlets (dcim/power-outlets/).
     Accepts: name, device, type, label, limit
         name: Name of the power outlet (case-insensitive contains match)
@@ -1296,7 +1354,9 @@ async def search_power_outlets(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         label: Power outlet label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox power outlet objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact power outlet objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1321,7 +1381,7 @@ async def get_power_outlet_details(args: Dict[str, Any]) -> List[Dict[str, Any]]
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/power-outlets/", args["id"])
+    return await _get_detail("dcim/power-outlets/", args["id"], args)
 
 
 # dcim/power-outlet-templates
@@ -1333,7 +1393,7 @@ async def get_power_outlet_details(args: Dict[str, Any]) -> List[Dict[str, Any]]
         "openWorldHint": True
     }
 )
-async def search_power_outlet_templates(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_power_outlet_templates(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search power outlet templates (dcim/power-outlet-templates/).
     Accepts: name, device_type, type, label, limit
         name: Name of the power outlet template (case-insensitive contains match)
@@ -1342,7 +1402,9 @@ async def search_power_outlet_templates(args: Dict[str, Any]) -> List[Dict[str, 
         label: Power outlet template label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox power outlet template objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact power outlet template objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1367,7 +1429,7 @@ async def get_power_outlet_template_details(args: Dict[str, Any]) -> List[Dict[s
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/power-outlet-templates/", args["id"])
+    return await _get_detail("dcim/power-outlet-templates/", args["id"], args)
 
 
 # dcim/power-panels
@@ -1379,14 +1441,16 @@ async def get_power_outlet_template_details(args: Dict[str, Any]) -> List[Dict[s
         "openWorldHint": True
     }
 )
-async def search_power_panels(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_power_panels(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search power panels (dcim/power-panels/).
     Accepts: name, location, limit
         name: Name of the power panel (case-insensitive contains match)
         location: Location ID (numeric)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox power panel objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact power panel objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1409,7 +1473,7 @@ async def get_power_panel_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/power-panels/", args["id"])
+    return await _get_detail("dcim/power-panels/", args["id"], args)
 
 
 # dcim/power-ports
@@ -1421,7 +1485,7 @@ async def get_power_panel_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_power_ports(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_power_ports(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search power ports (dcim/power-ports/).
     Accepts: name, device, type, label, limit
         name: Name of the power port (case-insensitive contains match)
@@ -1430,7 +1494,9 @@ async def search_power_ports(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         label: Power port label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox power port objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact power port objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1455,7 +1521,7 @@ async def get_power_port_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/power-ports/", args["id"])
+    return await _get_detail("dcim/power-ports/", args["id"], args)
 
 
 # dcim/power-port-templates
@@ -1467,7 +1533,7 @@ async def get_power_port_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_power_port_templates(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_power_port_templates(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search power port templates (dcim/power-port-templates/).
     Accepts: name, device_type, type, label, limit
         name: Name of the power port template (case-insensitive contains match)
@@ -1476,7 +1542,9 @@ async def search_power_port_templates(args: Dict[str, Any]) -> List[Dict[str, An
         label: Power port template label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox power port template objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact power port template objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1501,7 +1569,7 @@ async def get_power_port_template_details(args: Dict[str, Any]) -> List[Dict[str
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/power-port-templates/", args["id"])
+    return await _get_detail("dcim/power-port-templates/", args["id"], args)
 
 
 # dcim/racks
@@ -1513,7 +1581,7 @@ async def get_power_port_template_details(args: Dict[str, Any]) -> List[Dict[str
         "openWorldHint": True
     }
 )
-async def search_racks(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_racks(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search racks (dcim/racks/).
     Accepts: name, status, location, limit
         name: Name of the rack (case-insensitive contains match)
@@ -1521,7 +1589,9 @@ async def search_racks(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         location: Location ID (numeric)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox rack objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact rack objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1545,7 +1615,7 @@ async def get_rack_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/racks/", args["id"])
+    return await _get_detail("dcim/racks/", args["id"], args)
 
 
 # dcim/rack-reservations
@@ -1557,13 +1627,15 @@ async def get_rack_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_rack_reservations(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_rack_reservations(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search rack reservations (dcim/rack-reservations/).
     Accepts: rack, limit
         rack: Rack ID (numeric)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox rack reservation objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact rack reservation objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "rack": "rack_id"
@@ -1585,7 +1657,7 @@ async def get_rack_reservation_details(args: Dict[str, Any]) -> List[Dict[str, A
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/rack-reservations/", args["id"])
+    return await _get_detail("dcim/rack-reservations/", args["id"], args)
 
 
 # dcim/rack-roles
@@ -1597,13 +1669,15 @@ async def get_rack_reservation_details(args: Dict[str, Any]) -> List[Dict[str, A
         "openWorldHint": True
     }
 )
-async def search_rack_roles(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_rack_roles(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search rack roles (dcim/rack-roles/).
     Accepts: name, limit
         name: Name of the rack role (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox rack role objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact rack role objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic"
@@ -1625,7 +1699,7 @@ async def get_rack_role_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/rack-roles/", args["id"])
+    return await _get_detail("dcim/rack-roles/", args["id"], args)
 
 
 # dcim/rack-types
@@ -1637,14 +1711,16 @@ async def get_rack_role_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_rack_types(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_rack_types(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search rack types (dcim/rack-types/).
     Accepts: name, manufacturer, limit
         name: Name of the rack type (case-insensitive contains match)
         manufacturer: Manufacturer ID (numeric)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox rack type objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact rack type objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1667,7 +1743,7 @@ async def get_rack_type_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/rack-types/", args["id"])
+    return await _get_detail("dcim/rack-types/", args["id"], args)
 
 
 # dcim/rear-ports
@@ -1679,7 +1755,7 @@ async def get_rack_type_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_rear_ports(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_rear_ports(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search rear ports (dcim/rear-ports/).
     Accepts: name, device, type, label, limit
         name: Name of the rear port (case-insensitive contains match)
@@ -1688,7 +1764,9 @@ async def search_rear_ports(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         label: Rear port label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox rear port objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact rear port objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1713,7 +1791,7 @@ async def get_rear_port_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/rear-ports/", args["id"])
+    return await _get_detail("dcim/rear-ports/", args["id"], args)
 
 
 # dcim/rear-port-templates
@@ -1725,7 +1803,7 @@ async def get_rear_port_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_rear_port_templates(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_rear_port_templates(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search rear port templates (dcim/rear-port-templates/).
     Accepts: name, device_type, type, label, limit
         name: Name of the rear port template (case-insensitive contains match)
@@ -1734,7 +1812,9 @@ async def search_rear_port_templates(args: Dict[str, Any]) -> List[Dict[str, Any
         label: Rear port template label (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox rear port template objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact rear port template objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1759,7 +1839,7 @@ async def get_rear_port_template_details(args: Dict[str, Any]) -> List[Dict[str,
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/rear-port-templates/", args["id"])
+    return await _get_detail("dcim/rear-port-templates/", args["id"], args)
 
 
 # dcim/regions
@@ -1771,13 +1851,15 @@ async def get_rear_port_template_details(args: Dict[str, Any]) -> List[Dict[str,
         "openWorldHint": True
     }
 )
-async def search_regions(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_regions(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search regions (dcim/regions/).
     Accepts: name, limit
         name: Name of the region (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox region objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact region objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic"
@@ -1799,7 +1881,7 @@ async def get_region_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/regions/", args["id"])
+    return await _get_detail("dcim/regions/", args["id"], args)
 
 
 # dcim/virtual-chassis
@@ -1811,13 +1893,15 @@ async def get_region_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_virtual_chassis(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_virtual_chassis(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search virtual chassis (dcim/virtual-chassis/).
     Accepts: name, limit
         name: Name of the virtual chassis (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox virtual chassis objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact virtual chassis objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic"
@@ -1839,7 +1923,7 @@ async def get_virtual_chassis_details(args: Dict[str, Any]) -> List[Dict[str, An
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/virtual-chassis/", args["id"])
+    return await _get_detail("dcim/virtual-chassis/", args["id"], args)
 
 
 # dcim/virtual-device-contexts
@@ -1851,7 +1935,7 @@ async def get_virtual_chassis_details(args: Dict[str, Any]) -> List[Dict[str, An
         "openWorldHint": True
     }
 )
-async def search_virtual_device_contexts(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_virtual_device_contexts(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search virtual device contexts (dcim/virtual-device-contexts/).
     Accepts: name, device, status, limit
         name: Name of the virtual device context (case-insensitive contains match)
@@ -1859,7 +1943,9 @@ async def search_virtual_device_contexts(args: Dict[str, Any]) -> List[Dict[str,
         status: Status of the virtual device context (exact match), e.g., 'active', 'planned', 'offline'
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox virtual device context objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact virtual device context objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1883,6 +1969,6 @@ async def get_virtual_device_context_details(args: Dict[str, Any]) -> List[Dict[
     """
     if "id" not in args:
         return []
-    return await _get_detail("dcim/virtual-device-contexts/", args["id"])
+    return await _get_detail("dcim/virtual-device-contexts/", args["id"], args)
 
 

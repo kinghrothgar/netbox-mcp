@@ -17,7 +17,7 @@ from ..server import mcp
         "openWorldHint": True
     }
 )
-async def search_vrfs(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_vrfs(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search VRFs (ipam/vrfs/).
     Accepts: name, rd, tenant, import_target, export_target, enforce_unique, tag, q, limit
         name: VRF name (case-insensitive contains match)
@@ -30,7 +30,9 @@ async def search_vrfs(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         q: Free-text search across name, RD, and description
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox VRF objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact VRF objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -59,7 +61,7 @@ async def get_vrf_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/vrfs/", args["id"])
+    return await _get_detail("ipam/vrfs/", args["id"], args)
 
 
 # ipam/route-targets
@@ -71,7 +73,7 @@ async def get_vrf_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_route_targets(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_route_targets(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search route targets (ipam/route-targets/).
     Accepts: name, tenant, importing_vrf, exporting_vrf, tag, q, limit
         name: Route target name (case-insensitive contains match)
@@ -82,7 +84,9 @@ async def search_route_targets(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         q: Free-text search across name and description
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox route target objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact route target objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -109,7 +113,7 @@ async def get_route_target_details(args: Dict[str, Any]) -> List[Dict[str, Any]]
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/route-targets/", args["id"])
+    return await _get_detail("ipam/route-targets/", args["id"], args)
 
 
 # ipam/rirs
@@ -121,7 +125,7 @@ async def get_route_target_details(args: Dict[str, Any]) -> List[Dict[str, Any]]
         "openWorldHint": True
     }
 )
-async def search_rirs(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_rirs(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search RIRs (ipam/rirs/).
     Accepts: name, slug, is_private, tag, q, limit
         name: RIR name (case-insensitive contains match)
@@ -131,7 +135,9 @@ async def search_rirs(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         q: Free-text search
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox RIR objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact RIR objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -157,7 +163,7 @@ async def get_rir_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/rirs/", args["id"])
+    return await _get_detail("ipam/rirs/", args["id"], args)
 
 
 # ipam/aggregates
@@ -169,7 +175,7 @@ async def get_rir_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_aggregates(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_aggregates(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search aggregates (ipam/aggregates/).
     Accepts: prefix, family, rir, tenant, tag, q, limit
         prefix: Exact CIDR (e.g. '10.0.0.0/8')
@@ -180,7 +186,9 @@ async def search_aggregates(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         q: Free-text search across prefix and description
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox aggregate objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact aggregate objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "prefix": "prefix",
@@ -207,7 +215,7 @@ async def get_aggregate_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/aggregates/", args["id"])
+    return await _get_detail("ipam/aggregates/", args["id"], args)
 
 
 # ipam/roles
@@ -219,7 +227,7 @@ async def get_aggregate_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_ipam_roles(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_ipam_roles(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search IPAM roles (ipam/roles/).
 
     IPAM roles tag prefixes and VLANs with a logical role (e.g. Production,
@@ -233,7 +241,9 @@ async def search_ipam_roles(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         q: Free-text search
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox IPAM role objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact IPAM role objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -259,7 +269,7 @@ async def get_ipam_role_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/roles/", args["id"])
+    return await _get_detail("ipam/roles/", args["id"], args)
 
 
 # ipam/prefixes
@@ -271,7 +281,7 @@ async def get_ipam_role_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_prefixes(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_prefixes(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search prefixes (ipam/prefixes/).
 
     Accepts: prefix, within, within_include, contains, family, mask_length,
@@ -298,7 +308,9 @@ async def search_prefixes(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         q: Free-text search across prefix and description
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox prefix objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact prefix objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "prefix": "prefix",
@@ -338,7 +350,7 @@ async def get_prefix_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/prefixes/", args["id"])
+    return await _get_detail("ipam/prefixes/", args["id"], args)
 
 
 # ipam/prefixes/{id}/available-prefixes
@@ -398,7 +410,7 @@ async def get_prefix_available_ips(args: Dict[str, Any]) -> List[Dict[str, Any]]
         "openWorldHint": True
     }
 )
-async def search_ip_ranges(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_ip_ranges(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search IP ranges (ipam/ip-ranges/).
     Accepts: start_address, end_address, parent, contains, vrf, role, status,
              tenant, tag, q, limit
@@ -414,7 +426,9 @@ async def search_ip_ranges(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         q: Free-text search across description, start, and end addresses
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox IP range objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact IP range objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "start_address": "start_address",
@@ -445,7 +459,7 @@ async def get_ip_range_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/ip-ranges/", args["id"])
+    return await _get_detail("ipam/ip-ranges/", args["id"], args)
 
 
 # ipam/ip-ranges/{id}/available-ips
@@ -481,7 +495,7 @@ async def get_ip_range_available_ips(args: Dict[str, Any]) -> List[Dict[str, Any
         "openWorldHint": True
     }
 )
-async def search_ip_addresses(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_ip_addresses(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search IP addresses (ipam/ip-addresses/).
 
     Accepts: address, parent, family, mask_length, vrf, present_in_vrf, device,
@@ -507,7 +521,9 @@ async def search_ip_addresses(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         q: Free-text search across address, DNS name, and description
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox IP address objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact IP address objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "address": "address",
@@ -546,7 +562,7 @@ async def get_ip_address_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/ip-addresses/", args["id"])
+    return await _get_detail("ipam/ip-addresses/", args["id"], args)
 
 
 # ipam/fhrp-groups
@@ -558,7 +574,7 @@ async def get_ip_address_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_fhrp_groups(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_fhrp_groups(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search FHRP groups (ipam/fhrp-groups/).
 
     Accepts: group_id, name, protocol, auth_type, related_ip, tag, q, limit
@@ -571,7 +587,9 @@ async def search_fhrp_groups(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         q: Free-text search across name, group_id, and description
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox FHRP group objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact FHRP group objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "group_id": "group_id",
@@ -599,7 +617,7 @@ async def get_fhrp_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/fhrp-groups/", args["id"])
+    return await _get_detail("ipam/fhrp-groups/", args["id"], args)
 
 
 # ipam/fhrp-group-assignments
@@ -611,7 +629,7 @@ async def get_fhrp_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_fhrp_group_assignments(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_fhrp_group_assignments(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search FHRP group assignments (ipam/fhrp-group-assignments/).
 
     Accepts: group_id, interface_type, interface_id, priority, device,
@@ -624,7 +642,9 @@ async def search_fhrp_group_assignments(args: Dict[str, Any]) -> List[Dict[str, 
         virtual_machine: Virtual machine name (matches VM interfaces)
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox FHRP group assignment objects, or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact FHRP group assignment objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "group_id": "group_id",
@@ -651,7 +671,7 @@ async def get_fhrp_group_assignment_details(args: Dict[str, Any]) -> List[Dict[s
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/fhrp-group-assignments/", args["id"])
+    return await _get_detail("ipam/fhrp-group-assignments/", args["id"], args)
 
 
 # ipam/asns
@@ -663,7 +683,7 @@ async def get_fhrp_group_assignment_details(args: Dict[str, Any]) -> List[Dict[s
         "openWorldHint": True
     }
 )
-async def search_asns(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_asns(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search ASNs (ipam/asns/).
     Accepts: asn, rir, site, tenant, provider, tag, q, limit
         asn: ASN number (exact match)
@@ -675,7 +695,9 @@ async def search_asns(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         q: Free-text search across description and asn
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox ASN objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact ASN objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "asn": "asn",
@@ -703,7 +725,7 @@ async def get_asn_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/asns/", args["id"])
+    return await _get_detail("ipam/asns/", args["id"], args)
 
 
 # ipam/asn-ranges
@@ -715,7 +737,7 @@ async def get_asn_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_asn_ranges(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_asn_ranges(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search ASN ranges (ipam/asn-ranges/).
     Accepts: name, rir, tenant, start, end, tag, q, limit
         name: ASN range name (case-insensitive contains match)
@@ -727,7 +749,9 @@ async def search_asn_ranges(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         q: Free-text search across name and description
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox ASN range objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact ASN range objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -755,7 +779,7 @@ async def get_asn_range_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/asn-ranges/", args["id"])
+    return await _get_detail("ipam/asn-ranges/", args["id"], args)
 
 
 # ipam/asn-ranges/{id}/available-asns
@@ -791,7 +815,7 @@ async def get_asn_range_available_asns(args: Dict[str, Any]) -> List[Dict[str, A
         "openWorldHint": True
     }
 )
-async def search_vlan_groups(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_vlan_groups(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search VLAN groups (ipam/vlan-groups/).
     Accepts: name, scope_type, site, region, location, rack, cluster,
              cluster_group, contains_vid, tag, q, limit
@@ -808,7 +832,9 @@ async def search_vlan_groups(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         q: Free-text search across name and description
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox VLAN group objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact VLAN group objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -840,7 +866,7 @@ async def get_vlan_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/vlan-groups/", args["id"])
+    return await _get_detail("ipam/vlan-groups/", args["id"], args)
 
 
 # ipam/vlan-groups/{id}/available-vlans
@@ -876,7 +902,7 @@ async def get_vlan_group_available_vlans(args: Dict[str, Any]) -> List[Dict[str,
         "openWorldHint": True
     }
 )
-async def search_vlans(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_vlans(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search VLANs (ipam/vlans/).
 
     Accepts: vid, name, group, site, region, role, tenant, status,
@@ -898,7 +924,9 @@ async def search_vlans(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         q: Free-text search across name, vid, and description
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox VLAN objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact VLAN objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "vid": "vid",
@@ -933,7 +961,7 @@ async def get_vlan_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/vlans/", args["id"])
+    return await _get_detail("ipam/vlans/", args["id"], args)
 
 
 # ipam/vlan-translation-policies
@@ -945,7 +973,7 @@ async def get_vlan_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_vlan_translation_policies(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_vlan_translation_policies(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search VLAN translation policies (ipam/vlan-translation-policies/).
     Accepts: name, tag, q, limit
         name: Policy name (case-insensitive contains match)
@@ -953,7 +981,9 @@ async def search_vlan_translation_policies(args: Dict[str, Any]) -> List[Dict[st
         q: Free-text search across name and description
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox VLAN translation policy objects, or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact VLAN translation policy objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -978,7 +1008,7 @@ async def get_vlan_translation_policy_details(args: Dict[str, Any]) -> List[Dict
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/vlan-translation-policies/", args["id"])
+    return await _get_detail("ipam/vlan-translation-policies/", args["id"], args)
 
 
 # ipam/vlan-translation-rules
@@ -990,7 +1020,7 @@ async def get_vlan_translation_policy_details(args: Dict[str, Any]) -> List[Dict
         "openWorldHint": True
     }
 )
-async def search_vlan_translation_rules(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_vlan_translation_rules(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search VLAN translation rules (ipam/vlan-translation-rules/).
     Accepts: policy, local_vid, remote_vid, q, limit
         policy: Policy name or ID
@@ -999,7 +1029,9 @@ async def search_vlan_translation_rules(args: Dict[str, Any]) -> List[Dict[str, 
         q: Free-text search across policy and VIDs
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox VLAN translation rule objects, or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact VLAN translation rule objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "policy": "policy",
@@ -1024,7 +1056,7 @@ async def get_vlan_translation_rule_details(args: Dict[str, Any]) -> List[Dict[s
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/vlan-translation-rules/", args["id"])
+    return await _get_detail("ipam/vlan-translation-rules/", args["id"], args)
 
 
 # ipam/service-templates
@@ -1036,7 +1068,7 @@ async def get_vlan_translation_rule_details(args: Dict[str, Any]) -> List[Dict[s
         "openWorldHint": True
     }
 )
-async def search_service_templates(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_service_templates(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search service templates (ipam/service-templates/).
     Accepts: name, protocol, port, tag, q, limit
         name: Template name (case-insensitive contains match)
@@ -1046,7 +1078,9 @@ async def search_service_templates(args: Dict[str, Any]) -> List[Dict[str, Any]]
         q: Free-text search across name and description
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox service template objects, or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact service template objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1072,7 +1106,7 @@ async def get_service_template_details(args: Dict[str, Any]) -> List[Dict[str, A
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/service-templates/", args["id"])
+    return await _get_detail("ipam/service-templates/", args["id"], args)
 
 
 # ipam/services
@@ -1084,7 +1118,7 @@ async def get_service_template_details(args: Dict[str, Any]) -> List[Dict[str, A
         "openWorldHint": True
     }
 )
-async def search_services(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_services(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search services (ipam/services/).
 
     Accepts: name, protocol, port, device, virtual_machine, fhrpgroup,
@@ -1102,7 +1136,9 @@ async def search_services(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         q: Free-text search across name and description
         limit: Maximum number of results to return (default 10)
 
-    Returns a list of NetBox service objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact service objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -1134,7 +1170,7 @@ async def get_service_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("ipam/services/", args["id"])
+    return await _get_detail("ipam/services/", args["id"], args)
 
 
 

@@ -37,7 +37,7 @@ Repository conventions
 ---------------------
 - Tools live under `netbox_mcp/tools/<app>.py`, one module per NetBox app.
 - Shared infrastructure: `netbox_mcp/client.py` (NetBoxClient wrapping `httpx.AsyncClient`), `netbox_mcp/helpers.py` (search/detail/list helpers), `netbox_mcp/server.py` (`mcp = FastMCP(...)` singleton).
-- MCP registration: functions are decorated with `@mcp.tool` and are async functions with signature `async def func(args: Dict[str, Any]) -> List[Dict[str, Any]]`. Tools register at import time; `netbox_mcp/tools/__init__.py` imports every submodule so all decorators fire before the server starts.
+- MCP registration: functions are decorated with `@mcp.tool` and are async functions taking `args: Dict[str, Any]`. Search tools return `Dict[str, Any]` shaped as `{"count": int, "results": [...]}`; detail tools return `List[Dict[str, Any]]` (single-element list or `[]`). Tools register at import time; `netbox_mcp/tools/__init__.py` imports every submodule so all decorators fire before the server starts.
 
 Dependencies and setup
 ---------------------
@@ -88,16 +88,26 @@ Naming and signatures
 ---------------------
 - Search tool naming: `search_<resource>` where `<resource>` is a concise, snake_case name matching the API resource (examples: `search_sites`, `search_devices`, `search_vlans`).
 - Get tool naming: `get_<resource>_details` (examples: `get_site_details`, `get_device_details`).
-- All tools: `async def name(args: Dict[str, Any]) -> List[Dict[str, Any]]`.
-- `search_` behavior: accept a limited set of optional filter args (documented in the docstring) and return the NetBox `results` list or an empty list.
-- `get_` behavior: accept at minimum `id` in `args`; if present fetch the `.../{id}/` endpoint and return `[object]` or `[]`.
+- Signatures: `async def search_<resource>(args: Dict[str, Any]) -> Dict[str, Any]`
+  for search tools; `async def get_<resource>_details(args: Dict[str, Any]) -> List[Dict[str, Any]]`
+  for detail tools.
+- `search_` behavior: accept a limited set of optional filter args (documented
+  in the docstring) plus the shared knobs `limit`, `offset`, `brief`, `fields`,
+  `exclude` (handled by `helpers._build_params` / `helpers._search`). Return
+  `{"count": int, "results": [...]}` where `count` is the NetBox total and
+  `results` is the current page. Default `brief=true` for compact payloads.
+- `get_` behavior: accept at minimum `id` in `args`; if present fetch the
+  `.../{id}/` endpoint via `helpers._get_detail(endpoint, args["id"], args)`
+  and return `[object]` or `[]`. Pass `args` through so `fields`, `exclude`,
+  and `raw` are honoured. By default a small set of noisy keys is stripped
+  from the returned object; pass `raw=true` to disable.
 
 Docstrings and content requirements
 ----------------------------------
 Each tool must include a multi-line docstring that:
 - Briefly describes the purpose and which NetBox endpoint it queries.
 - Lists accepted args and their types/semantics. Be explicit about which args are required vs optional.
-- Describes the return value (list of NetBox objects or single-element list) and error behavior.
+- Describes the return value (search: `{count, results}`; detail: single-element list) and error behavior.
 - Notes any edge-cases or special semantics (e.g., when name lookup is supported, how multiple matches are handled).
 
 Do not include long human chatter in the return value: return structured JSON objects (NetBox dicts) so downstream tools can consume them reliably.

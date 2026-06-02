@@ -19,7 +19,7 @@ from ..server import mcp
         "openWorldHint": True
     }
 )
-async def search_circuits(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_circuits(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search circuits (circuits/circuits/).
     Accepts: provider, circuit_id, circuit_type, status, limit
         provider: Provider ID or name (case-insensitive contains match for name)
@@ -28,7 +28,9 @@ async def search_circuits(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         status: Status of the circuit (exact match), e.g., 'active', 'planned', 'decommissioning'
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox circuit objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact circuit objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "provider": "provider",
@@ -53,7 +55,7 @@ async def get_circuit_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("circuits/circuits/", args["id"])
+    return await _get_detail("circuits/circuits/", args["id"], args)
 
 
 # circuits/circuit-groups
@@ -65,13 +67,15 @@ async def get_circuit_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_circuit_groups(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_circuit_groups(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search circuit groups (circuits/circuit-groups/).
     Accepts: name, limit
         name: Name of the circuit group (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox circuit group objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact circuit group objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {"name": "name__ic"}
     return await _search("circuits/circuit-groups/", args, mappings)
@@ -91,7 +95,7 @@ async def get_circuit_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]
     """
     if "id" not in args:
         return []
-    return await _get_detail("circuits/circuit-groups/", args["id"])
+    return await _get_detail("circuits/circuit-groups/", args["id"], args)
 
 
 # circuits/circuit-group-assignments
@@ -103,14 +107,16 @@ async def get_circuit_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]
         "openWorldHint": True
     }
 )
-async def search_circuit_group_assignments(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_circuit_group_assignments(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search circuit group assignments (circuits/circuit-group-assignments/).
     Accepts: priority, group, limit
         priority: Priority value (exact match)
         group: Circuit group ID (numeric)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox circuit group assignment objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact circuit group assignment objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "priority": "priority",
@@ -133,7 +139,7 @@ async def get_circuit_group_assignment_details(args: Dict[str, Any]) -> List[Dic
     """
     if "id" not in args:
         return []
-    return await _get_detail("circuits/circuit-group-assignments/", args["id"])
+    return await _get_detail("circuits/circuit-group-assignments/", args["id"], args)
 
 
 # circuits/circuit-terminations
@@ -145,14 +151,16 @@ async def get_circuit_group_assignment_details(args: Dict[str, Any]) -> List[Dic
         "openWorldHint": True
     }
 )
-async def search_circuit_terminations(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_circuit_terminations(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search circuit terminations (circuits/circuit-terminations/).
     Accepts: circuit, termination, limit
         circuit: Circuit ID (numeric)
         termination: Termination side, typically 'A' or 'Z'
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox circuit termination objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact circuit termination objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "circuit": "circuit_id",
@@ -175,7 +183,7 @@ async def get_circuit_termination_details(args: Dict[str, Any]) -> List[Dict[str
     """
     if "id" not in args:
         return []
-    return await _get_detail("circuits/circuit-terminations/", args["id"])
+    return await _get_detail("circuits/circuit-terminations/", args["id"], args)
 
 
 # circuits/circuit-types
@@ -187,13 +195,15 @@ async def get_circuit_termination_details(args: Dict[str, Any]) -> List[Dict[str
         "openWorldHint": True
     }
 )
-async def search_circuit_types(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_circuit_types(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search circuit types (circuits/circuit-types/).
     Accepts: name, limit
         name: Name of the circuit type (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox circuit type objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact circuit type objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {"name": "name__ic"}
     return await _search("circuits/circuit-types/", args, mappings)
@@ -213,7 +223,7 @@ async def get_circuit_type_details(args: Dict[str, Any]) -> List[Dict[str, Any]]
     """
     if "id" not in args:
         return []
-    return await _get_detail("circuits/circuit-types/", args["id"])
+    return await _get_detail("circuits/circuit-types/", args["id"], args)
 
 
 # circuits/providers
@@ -225,13 +235,15 @@ async def get_circuit_type_details(args: Dict[str, Any]) -> List[Dict[str, Any]]
         "openWorldHint": True
     }
 )
-async def search_providers(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_providers(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search providers (circuits/providers/).
     Accepts: name, limit
         name: Name of the provider (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox provider objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact provider objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {"name": "name__ic"}
     return await _search("circuits/providers/", args, mappings)
@@ -251,7 +263,7 @@ async def get_provider_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("circuits/providers/", args["id"])
+    return await _get_detail("circuits/providers/", args["id"], args)
 
 
 # circuits/provider-accounts
@@ -263,14 +275,16 @@ async def get_provider_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_provider_accounts(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_provider_accounts(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search provider accounts (circuits/provider-accounts/).
     Accepts: name, account_number, limit
         name: Name of the provider account (case-insensitive contains match)
         account_number: Account number (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox provider account objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact provider account objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -293,7 +307,7 @@ async def get_provider_account_details(args: Dict[str, Any]) -> List[Dict[str, A
     """
     if "id" not in args:
         return []
-    return await _get_detail("circuits/provider-accounts/", args["id"])
+    return await _get_detail("circuits/provider-accounts/", args["id"], args)
 
 
 # circuits/provider-networks
@@ -305,13 +319,15 @@ async def get_provider_account_details(args: Dict[str, Any]) -> List[Dict[str, A
         "openWorldHint": True
     }
 )
-async def search_provider_networks(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_provider_networks(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search provider networks (circuits/provider-networks/).
     Accepts: name, limit
         name: Name of the provider network (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox provider network objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact provider network objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {"name": "name__ic"}
     return await _search("circuits/provider-networks/", args, mappings)
@@ -331,7 +347,7 @@ async def get_provider_network_details(args: Dict[str, Any]) -> List[Dict[str, A
     """
     if "id" not in args:
         return []
-    return await _get_detail("circuits/provider-networks/", args["id"])
+    return await _get_detail("circuits/provider-networks/", args["id"], args)
 
 
 # circuits/virtual-circuits
@@ -343,7 +359,7 @@ async def get_provider_network_details(args: Dict[str, Any]) -> List[Dict[str, A
         "openWorldHint": True
     }
 )
-async def search_virtual_circuits(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_virtual_circuits(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search virtual circuits (circuits/virtual-circuits/).
     Accepts: provider_network, provider_account, circuit_id, status, limit
         provider_network: Provider network ID (numeric)
@@ -352,7 +368,9 @@ async def search_virtual_circuits(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         status: Status of the virtual circuit (exact match), e.g., 'active', 'planned', 'offline'
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox virtual circuit objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact virtual circuit objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "provider_network": "provider_network_id",
@@ -377,7 +395,7 @@ async def get_virtual_circuit_details(args: Dict[str, Any]) -> List[Dict[str, An
     """
     if "id" not in args:
         return []
-    return await _get_detail("circuits/virtual-circuits/", args["id"])
+    return await _get_detail("circuits/virtual-circuits/", args["id"], args)
 
 
 # circuits/virtual-circuit-terminations
@@ -389,14 +407,16 @@ async def get_virtual_circuit_details(args: Dict[str, Any]) -> List[Dict[str, An
         "openWorldHint": True
     }
 )
-async def search_virtual_circuit_terminations(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_virtual_circuit_terminations(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search virtual circuit terminations (circuits/virtual-circuit-terminations/).
     Accepts: virtual_circuit, interface, limit
         virtual_circuit: Virtual circuit ID (numeric)
         interface: Interface ID (numeric)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox virtual circuit termination objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact virtual circuit termination objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "virtual_circuit": "virtual_circuit_id",
@@ -419,7 +439,7 @@ async def get_virtual_circuit_termination_details(args: Dict[str, Any]) -> List[
     """
     if "id" not in args:
         return []
-    return await _get_detail("circuits/virtual-circuit-terminations/", args["id"])
+    return await _get_detail("circuits/virtual-circuit-terminations/", args["id"], args)
 
 
 # circuits/virtual-circuit-types
@@ -431,13 +451,15 @@ async def get_virtual_circuit_termination_details(args: Dict[str, Any]) -> List[
         "openWorldHint": True
     }
 )
-async def search_virtual_circuit_types(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_virtual_circuit_types(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search virtual circuit types (circuits/virtual-circuit-types/).
     Accepts: name, limit
         name: Name of the virtual circuit type (case-insensitive contains match)
         limit: Maximum number of results to return (default 10)
     
-    Returns a list of NetBox virtual circuit type objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact virtual circuit type objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {"name": "name__ic"}
     return await _search("circuits/virtual-circuit-types/", args, mappings)
@@ -457,6 +479,6 @@ async def get_virtual_circuit_type_details(args: Dict[str, Any]) -> List[Dict[st
     """
     if "id" not in args:
         return []
-    return await _get_detail("circuits/virtual-circuit-types/", args["id"])
+    return await _get_detail("circuits/virtual-circuit-types/", args["id"], args)
 
 

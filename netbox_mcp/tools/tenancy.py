@@ -19,14 +19,16 @@ from ..server import mcp
         "openWorldHint": True
     }
 )
-async def search_tenants(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_tenants(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search tenants (tenancy/tenants/).
     Accepts: name, group, limit
         name: Name of the tenant (case-insensitive contains match)
         group: Tenant group id or name (optional)
         limit: maximum number of results to return (default 10)
 
-    Returns a list of NetBox tenant objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact tenant objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {"name": "name__ic", "group": "tenant_group"}
     return await _search("tenancy/tenants/", args, mappings)
@@ -46,7 +48,7 @@ async def get_tenant_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("tenancy/tenants/", args["id"])
+    return await _get_detail("tenancy/tenants/", args["id"], args)
 
 
 # tenancy/tenant-groups
@@ -58,13 +60,15 @@ async def get_tenant_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_tenant_groups(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_tenant_groups(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search tenant groups (tenancy/tenant-groups/).
     Accepts: name, limit
         name: Name of the tenant group (case-insensitive contains match)
         limit: maximum number of results to return (default 10)
 
-    Returns a list of NetBox tenant group objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact tenant group objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {"name": "name__ic"}
     return await _search("tenancy/tenant-groups/", args, mappings)
@@ -84,7 +88,7 @@ async def get_tenant_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]
     """
     if "id" not in args:
         return []
-    return await _get_detail("tenancy/tenant-groups/", args["id"])
+    return await _get_detail("tenancy/tenant-groups/", args["id"], args)
 
 
 # tenancy/contacts
@@ -96,7 +100,7 @@ async def get_tenant_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]
         "openWorldHint": True
     }
 )
-async def search_contacts(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_contacts(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search contacts (tenancy/contacts/).
     Accepts: name, title, phone, email, address, limit
         name: Name of the contact (case-insensitive contains match)
@@ -106,7 +110,9 @@ async def search_contacts(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         address: Contact address (case-insensitive contains match)
         limit: maximum number of results to return (default 10)
 
-    Returns a list of NetBox contact objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact contact objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {
         "name": "name__ic",
@@ -132,7 +138,7 @@ async def get_contact_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     if "id" not in args:
         return []
-    return await _get_detail("tenancy/contacts/", args["id"])
+    return await _get_detail("tenancy/contacts/", args["id"], args)
 
 
 # tenancy/contact-groups
@@ -144,13 +150,15 @@ async def get_contact_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def search_contact_groups(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_contact_groups(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search contact groups (tenancy/contact-groups/).
     Accepts: name, limit
         name: Name of the contact group (case-insensitive contains match)
         limit: maximum number of results to return (default 10)
 
-    Returns a list of NetBox contact group objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact contact group objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {"name": "name__ic"}
     return await _search("tenancy/contact-groups/", args, mappings)
@@ -170,7 +178,7 @@ async def get_contact_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]
     """
     if "id" not in args:
         return []
-    return await _get_detail("tenancy/contact-groups/", args["id"])
+    return await _get_detail("tenancy/contact-groups/", args["id"], args)
 
 
 # tenancy/contact-roles
@@ -182,13 +190,15 @@ async def get_contact_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]
         "openWorldHint": True
     }
 )
-async def search_contact_roles(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def search_contact_roles(args: Dict[str, Any]) -> Dict[str, Any]:
     """Search contact roles (tenancy/contact-roles/).
     Accepts: name, limit
         name: Name of the contact role (case-insensitive contains match)
         limit: maximum number of results to return (default 10)
 
-    Returns a list of NetBox contact role objects (the `results` list) or an empty list.
+    Returns `{count, results}` (NetBox total + page). Default `brief=true`
+    for compact contact role objects; pass `brief=false` for full objects. Use
+    `offset` to paginate, `fields`/`exclude` to project, `limit` capped at 100.
     """
     mappings = {"name": "name__ic"}
     return await _search("tenancy/contact-roles/", args, mappings)
@@ -208,7 +218,7 @@ async def get_contact_role_details(args: Dict[str, Any]) -> List[Dict[str, Any]]
     """
     if "id" not in args:
         return []
-    return await _get_detail("tenancy/contact-roles/", args["id"])
+    return await _get_detail("tenancy/contact-roles/", args["id"], args)
 
 
 
