@@ -1,6 +1,6 @@
 """Tools for the NetBox extras app (selected read-useful resources)."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from ..helpers import _get_detail, _get_list, _search  # noqa: F401
 from ..server import mcp
@@ -46,13 +46,13 @@ async def search_tags(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_tag_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_tag_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get tag by ID (extras/tags/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the tag to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the tag to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("extras/tags/", args["id"], args)
 
 
@@ -103,13 +103,13 @@ async def search_journal_entries(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_journal_entry_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_journal_entry_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get journal entry by ID (extras/journal-entries/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the journal entry to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the journal entry to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("extras/journal-entries/", args["id"], args)
 
 
@@ -179,13 +179,13 @@ async def search_config_contexts(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_config_context_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_config_context_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get config context by ID (extras/config-contexts/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the config context to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the config context to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("extras/config-contexts/", args["id"], args)
 
 
@@ -229,13 +229,13 @@ async def search_config_templates(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_config_template_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_config_template_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get config template by ID (extras/config-templates/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the config template to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the config template to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("extras/config-templates/", args["id"], args)
 
 
@@ -287,13 +287,13 @@ async def search_custom_fields(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_custom_field_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_custom_field_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get custom field by ID (extras/custom-fields/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the custom field to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the custom field to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("extras/custom-fields/", args["id"], args)
 
 
@@ -335,11 +335,11 @@ async def search_custom_field_choice_sets(args: Dict[str, Any]) -> Dict[str, Any
         "openWorldHint": True
     }
 )
-async def get_custom_field_choice_set_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_custom_field_choice_set_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get custom field choice set by ID (extras/custom-field-choice-sets/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the choice set to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the choice set to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("extras/custom-field-choice-sets/", args["id"], args)

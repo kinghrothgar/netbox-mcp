@@ -1,6 +1,6 @@
 """Tools for the NetBox dcim app."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from ..helpers import _get_action, _get_detail, _get_list, _search
 from ..server import mcp
@@ -43,13 +43,13 @@ async def search_sites(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_site_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_site_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get site by ID (dcim/sites/).
     Accepts: id
         id: ID of the site - can be obtained from search_sites
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/sites/", args["id"], args)
 
 
@@ -81,15 +81,14 @@ async def search_site_groups(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_site_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_site_group_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get site group details by ID (dcim/site-groups/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the site group to fetch. When provided, the tool will call
-            the single-object endpoint and return a single-element list `[obj]` or `[]` if
-            not found.
+        id: Numeric ID of the site group to fetch. Returns the envelope
+            `{"results": [obj]}` or `{"results": []}` if not found.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/site-groups/", args["id"], args)
 
 
@@ -133,13 +132,13 @@ async def search_cables(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_cable_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_cable_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get cable by ID (dcim/cables/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the cable to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the cable to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/cables/", args["id"], args)
 
 
@@ -181,13 +180,13 @@ async def search_console_ports(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_console_port_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_console_port_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get console port by ID (dcim/console-ports/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the console port to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the console port to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/console-ports/", args["id"], args)
 
 
@@ -229,13 +228,13 @@ async def search_console_port_templates(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_console_port_template_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_console_port_template_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get console port template by ID (dcim/console-port-templates/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the console port template to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the console port template to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/console-port-templates/", args["id"], args)
 
 
@@ -277,13 +276,13 @@ async def search_console_server_ports(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_console_server_port_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_console_server_port_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get console server port by ID (dcim/console-server-ports/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the console server port to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the console server port to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/console-server-ports/", args["id"], args)
 
 
@@ -325,13 +324,13 @@ async def search_console_server_port_templates(args: Dict[str, Any]) -> Dict[str
         "openWorldHint": True
     }
 )
-async def get_console_server_port_template_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_console_server_port_template_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get console server port template by ID (dcim/console-server-port-templates/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the console server port template to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the console server port template to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/console-server-port-templates/", args["id"], args)
 
 
@@ -381,13 +380,13 @@ async def search_devices(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_device_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_device_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get device details by ID (dcim/devices/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the device to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the device to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/devices/", args["id"], args)
 
 
@@ -427,13 +426,13 @@ async def search_device_bays(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_device_bay_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_device_bay_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get device bay by ID (dcim/device-bays/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the device bay to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the device bay to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/device-bays/", args["id"], args)
 
 
@@ -473,13 +472,13 @@ async def search_device_bay_templates(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_device_bay_template_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_device_bay_template_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get device bay template by ID (dcim/device-bay-templates/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the device bay template to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the device bay template to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/device-bay-templates/", args["id"], args)
 
 
@@ -515,13 +514,13 @@ async def search_device_roles(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_device_role_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_device_role_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get device role by ID (dcim/device-roles/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the device role to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the device role to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/device-roles/", args["id"], args)
 
 
@@ -559,13 +558,13 @@ async def search_device_types(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_device_type_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_device_type_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get device type by ID (dcim/device-types/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the device type to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the device type to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/device-types/", args["id"], args)
 
 
@@ -607,13 +606,13 @@ async def search_front_ports(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_front_port_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_front_port_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get front port by ID (dcim/front-ports/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the front port to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the front port to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/front-ports/", args["id"], args)
 
 
@@ -655,13 +654,13 @@ async def search_front_port_templates(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_front_port_template_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_front_port_template_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get front port template by ID (dcim/front-port-templates/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the front port template to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the front port template to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/front-port-templates/", args["id"], args)
 
 
@@ -703,13 +702,13 @@ async def search_interfaces(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_interface_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_interface_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get interface by ID (dcim/interfaces/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the interface to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the interface to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/interfaces/", args["id"], args)
 
 
@@ -751,13 +750,13 @@ async def search_interface_templates(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_interface_template_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_interface_template_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get interface template by ID (dcim/interface-templates/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the interface template to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the interface template to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/interface-templates/", args["id"], args)
 
 
@@ -797,13 +796,13 @@ async def search_inventory_items(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_inventory_item_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_inventory_item_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get inventory item by ID (dcim/inventory-items/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the inventory item to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the inventory item to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/inventory-items/", args["id"], args)
 
 
@@ -839,13 +838,13 @@ async def search_inventory_item_roles(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_inventory_item_role_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_inventory_item_role_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get inventory item role by ID (dcim/inventory-item-roles/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the inventory item role to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the inventory item role to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/inventory-item-roles/", args["id"], args)
 
 
@@ -885,13 +884,13 @@ async def search_inventory_item_templates(args: Dict[str, Any]) -> Dict[str, Any
         "openWorldHint": True
     }
 )
-async def get_inventory_item_template_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_inventory_item_template_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get inventory item template by ID (dcim/inventory-item-templates/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the inventory item template to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the inventory item template to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/inventory-item-templates/", args["id"], args)
 
 
@@ -929,13 +928,13 @@ async def search_locations(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_location_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_location_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get location by ID (dcim/locations/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the location to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the location to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/locations/", args["id"], args)
 
 
@@ -973,13 +972,13 @@ async def search_mac_addresses(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_mac_address_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_mac_address_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get MAC address by ID (dcim/mac-addresses/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the MAC address to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the MAC address to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/mac-addresses/", args["id"], args)
 
 
@@ -1015,13 +1014,13 @@ async def search_manufacturers(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_manufacturer_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_manufacturer_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get manufacturer by ID (dcim/manufacturers/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the manufacturer to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the manufacturer to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/manufacturers/", args["id"], args)
 
 
@@ -1059,13 +1058,13 @@ async def search_modules(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_module_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_module_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get module by ID (dcim/modules/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the module to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the module to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/modules/", args["id"], args)
 
 
@@ -1105,13 +1104,13 @@ async def search_module_bays(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_module_bay_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_module_bay_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get module bay by ID (dcim/module-bays/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the module bay to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the module bay to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/module-bays/", args["id"], args)
 
 
@@ -1151,13 +1150,13 @@ async def search_module_bay_templates(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_module_bay_template_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_module_bay_template_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get module bay template by ID (dcim/module-bay-templates/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the module bay template to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the module bay template to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/module-bay-templates/", args["id"], args)
 
 
@@ -1195,13 +1194,13 @@ async def search_module_types(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_module_type_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_module_type_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get module type by ID (dcim/module-types/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the module type to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the module type to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/module-types/", args["id"], args)
 
 
@@ -1237,13 +1236,13 @@ async def search_module_type_profiles(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_module_type_profile_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_module_type_profile_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get module type profile by ID (dcim/module-type-profiles/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the module type profile to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the module type profile to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/module-type-profiles/", args["id"], args)
 
 
@@ -1281,13 +1280,13 @@ async def search_platforms(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_platform_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_platform_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get platform by ID (dcim/platforms/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the platform to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the platform to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/platforms/", args["id"], args)
 
 
@@ -1327,13 +1326,13 @@ async def search_power_feeds(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_power_feed_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_power_feed_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get power feed by ID (dcim/power-feeds/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the power feed to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the power feed to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/power-feeds/", args["id"], args)
 
 
@@ -1375,13 +1374,13 @@ async def search_power_outlets(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_power_outlet_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_power_outlet_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get power outlet by ID (dcim/power-outlets/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the power outlet to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the power outlet to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/power-outlets/", args["id"], args)
 
 
@@ -1423,13 +1422,13 @@ async def search_power_outlet_templates(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_power_outlet_template_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_power_outlet_template_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get power outlet template by ID (dcim/power-outlet-templates/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the power outlet template to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the power outlet template to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/power-outlet-templates/", args["id"], args)
 
 
@@ -1467,13 +1466,13 @@ async def search_power_panels(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_power_panel_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_power_panel_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get power panel by ID (dcim/power-panels/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the power panel to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the power panel to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/power-panels/", args["id"], args)
 
 
@@ -1515,13 +1514,13 @@ async def search_power_ports(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_power_port_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_power_port_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get power port by ID (dcim/power-ports/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the power port to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the power port to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/power-ports/", args["id"], args)
 
 
@@ -1563,13 +1562,13 @@ async def search_power_port_templates(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_power_port_template_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_power_port_template_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get power port template by ID (dcim/power-port-templates/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the power port template to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the power port template to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/power-port-templates/", args["id"], args)
 
 
@@ -1609,13 +1608,13 @@ async def search_racks(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_rack_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_rack_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get rack by ID (dcim/racks/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the rack to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the rack to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/racks/", args["id"], args)
 
 
@@ -1651,13 +1650,13 @@ async def search_rack_reservations(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_rack_reservation_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_rack_reservation_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get rack reservation by ID (dcim/rack-reservations/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the rack reservation to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the rack reservation to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/rack-reservations/", args["id"], args)
 
 
@@ -1708,13 +1707,13 @@ async def search_rack_groups(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_rack_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_rack_group_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get rack group by ID (dcim/rack-groups/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the rack group to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the rack group to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/rack-groups/", args["id"], args)
 
 
@@ -1750,13 +1749,13 @@ async def search_rack_roles(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_rack_role_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_rack_role_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get rack role by ID (dcim/rack-roles/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the rack role to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the rack role to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/rack-roles/", args["id"], args)
 
 
@@ -1794,13 +1793,13 @@ async def search_rack_types(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_rack_type_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_rack_type_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get rack type by ID (dcim/rack-types/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the rack type to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the rack type to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/rack-types/", args["id"], args)
 
 
@@ -1842,13 +1841,13 @@ async def search_rear_ports(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_rear_port_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_rear_port_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get rear port by ID (dcim/rear-ports/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the rear port to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the rear port to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/rear-ports/", args["id"], args)
 
 
@@ -1890,13 +1889,13 @@ async def search_rear_port_templates(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_rear_port_template_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_rear_port_template_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get rear port template by ID (dcim/rear-port-templates/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the rear port template to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the rear port template to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/rear-port-templates/", args["id"], args)
 
 
@@ -1932,13 +1931,13 @@ async def search_regions(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_region_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_region_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get region by ID (dcim/regions/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the region to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the region to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/regions/", args["id"], args)
 
 
@@ -1974,13 +1973,13 @@ async def search_virtual_chassis(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_virtual_chassis_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_virtual_chassis_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get virtual chassis by ID (dcim/virtual-chassis/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the virtual chassis to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the virtual chassis to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/virtual-chassis/", args["id"], args)
 
 
@@ -2020,13 +2019,13 @@ async def search_virtual_device_contexts(args: Dict[str, Any]) -> Dict[str, Any]
         "openWorldHint": True
     }
 )
-async def get_virtual_device_context_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_virtual_device_context_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get virtual device context by ID (dcim/virtual-device-contexts/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the virtual device context to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the virtual device context to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/virtual-device-contexts/", args["id"], args)
 
 
@@ -2080,13 +2079,13 @@ async def search_cable_bundles(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_cable_bundle_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_cable_bundle_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get cable bundle by ID (dcim/cable-bundles/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the cable bundle to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the cable bundle to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/cable-bundles/", args["id"], args)
 
 
@@ -2130,13 +2129,13 @@ async def search_cable_terminations(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_cable_termination_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_cable_termination_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get cable termination by ID (dcim/cable-terminations/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the cable termination to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the cable termination to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("dcim/cable-terminations/", args["id"], args)
 
 
@@ -2151,7 +2150,7 @@ async def get_cable_termination_details(args: Dict[str, Any]) -> List[Dict[str, 
         "openWorldHint": True
     }
 )
-async def get_console_port_trace(args: Dict[str, Any]) -> Any:
+async def get_console_port_trace(args: Dict[str, Any]) -> Dict[str, Any]:
     """Trace the cable path from a console port (dcim/console-ports/{id}/trace/).
     Accepts: id (required)
         id: Numeric ID of the console port.
@@ -2160,7 +2159,7 @@ async def get_console_port_trace(args: Dict[str, Any]) -> Any:
     segments, traversing any patch panels in between. Returns `[]` on error.
     """
     if "id" not in args:
-        return []
+        return {"result": []}
     return await _get_action(f"dcim/console-ports/{args['id']}/trace/", args)
 
 
@@ -2173,7 +2172,7 @@ async def get_console_port_trace(args: Dict[str, Any]) -> Any:
         "openWorldHint": True
     }
 )
-async def get_console_server_port_trace(args: Dict[str, Any]) -> Any:
+async def get_console_server_port_trace(args: Dict[str, Any]) -> Dict[str, Any]:
     """Trace the cable path from a console server port (dcim/console-server-ports/{id}/trace/).
     Accepts: id (required)
         id: Numeric ID of the console server port.
@@ -2182,7 +2181,7 @@ async def get_console_server_port_trace(args: Dict[str, Any]) -> Any:
     segments, traversing any patch panels in between. Returns `[]` on error.
     """
     if "id" not in args:
-        return []
+        return {"result": []}
     return await _get_action(f"dcim/console-server-ports/{args['id']}/trace/", args)
 
 
@@ -2195,7 +2194,7 @@ async def get_console_server_port_trace(args: Dict[str, Any]) -> Any:
         "openWorldHint": True
     }
 )
-async def get_power_port_trace(args: Dict[str, Any]) -> Any:
+async def get_power_port_trace(args: Dict[str, Any]) -> Dict[str, Any]:
     """Trace the cable path from a power port (dcim/power-ports/{id}/trace/).
     Accepts: id (required)
         id: Numeric ID of the power port.
@@ -2204,7 +2203,7 @@ async def get_power_port_trace(args: Dict[str, Any]) -> Any:
     segments, traversing any patch panels in between. Returns `[]` on error.
     """
     if "id" not in args:
-        return []
+        return {"result": []}
     return await _get_action(f"dcim/power-ports/{args['id']}/trace/", args)
 
 
@@ -2217,7 +2216,7 @@ async def get_power_port_trace(args: Dict[str, Any]) -> Any:
         "openWorldHint": True
     }
 )
-async def get_power_outlet_trace(args: Dict[str, Any]) -> Any:
+async def get_power_outlet_trace(args: Dict[str, Any]) -> Dict[str, Any]:
     """Trace the cable path from a power outlet (dcim/power-outlets/{id}/trace/).
     Accepts: id (required)
         id: Numeric ID of the power outlet.
@@ -2226,7 +2225,7 @@ async def get_power_outlet_trace(args: Dict[str, Any]) -> Any:
     segments, traversing any patch panels in between. Returns `[]` on error.
     """
     if "id" not in args:
-        return []
+        return {"result": []}
     return await _get_action(f"dcim/power-outlets/{args['id']}/trace/", args)
 
 
@@ -2239,7 +2238,7 @@ async def get_power_outlet_trace(args: Dict[str, Any]) -> Any:
         "openWorldHint": True
     }
 )
-async def get_interface_trace(args: Dict[str, Any]) -> Any:
+async def get_interface_trace(args: Dict[str, Any]) -> Dict[str, Any]:
     """Trace the cable path from an interface (dcim/interfaces/{id}/trace/).
     Accepts: id (required)
         id: Numeric ID of the interface.
@@ -2248,7 +2247,7 @@ async def get_interface_trace(args: Dict[str, Any]) -> Any:
     segments, traversing any patch panels in between. Returns `[]` on error.
     """
     if "id" not in args:
-        return []
+        return {"result": []}
     return await _get_action(f"dcim/interfaces/{args['id']}/trace/", args)
 
 
@@ -2261,7 +2260,7 @@ async def get_interface_trace(args: Dict[str, Any]) -> Any:
         "openWorldHint": True
     }
 )
-async def get_power_feed_trace(args: Dict[str, Any]) -> Any:
+async def get_power_feed_trace(args: Dict[str, Any]) -> Dict[str, Any]:
     """Trace the cable path from a power feed (dcim/power-feeds/{id}/trace/).
     Accepts: id (required)
         id: Numeric ID of the power feed.
@@ -2270,7 +2269,7 @@ async def get_power_feed_trace(args: Dict[str, Any]) -> Any:
     segments, traversing any patch panels in between. Returns `[]` on error.
     """
     if "id" not in args:
-        return []
+        return {"result": []}
     return await _get_action(f"dcim/power-feeds/{args['id']}/trace/", args)
 
 
@@ -2283,7 +2282,7 @@ async def get_power_feed_trace(args: Dict[str, Any]) -> Any:
         "openWorldHint": True
     }
 )
-async def get_rack_elevation(args: Dict[str, Any]) -> Any:
+async def get_rack_elevation(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get rack elevation (dcim/racks/{id}/elevation/).
     Accepts: id (required), face, render, unit_width, unit_height,
              legend_width, exclude, expand_devices, include_images
@@ -2291,11 +2290,12 @@ async def get_rack_elevation(args: Dict[str, Any]) -> Any:
         face: 'front' or 'rear' (default: front)
         render: 'json' (default) or 'svg'
 
-    Returns the rack's unit-by-unit elevation listing installed devices,
-    or `[]` on error. Use this to answer "what's mounted in rack X".
+    Returns the envelope `{"result": [...]}` where result is the rack's
+    unit-by-unit elevation listing installed devices. `result` is `[]` on
+    error. Use this to answer "what's mounted in rack X".
     """
     if "id" not in args:
-        return []
+        return {"result": []}
     return await _get_action(f"dcim/racks/{args['id']}/elevation/", args)
 
 

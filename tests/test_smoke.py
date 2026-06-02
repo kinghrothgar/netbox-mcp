@@ -44,6 +44,22 @@ def _assert_brief_object(obj):
     assert isinstance(obj["id"], int), f"id is not an int: {obj['id']!r}"
 
 
+def _assert_detail_envelope(payload):
+    """Assert the {results: [...]} shape returned by every get_*_details / _get_list."""
+    assert isinstance(payload, dict), \
+        f"Expected dict envelope, got {type(payload).__name__}: {payload!r}"
+    assert "results" in payload, f"Missing 'results' in {payload!r}"
+    assert isinstance(payload["results"], list), \
+        f"results is {type(payload['results']).__name__}, not list"
+
+
+def _assert_action_envelope(payload):
+    """Assert the {result: ...} shape returned by every _get_action tool."""
+    assert isinstance(payload, dict), \
+        f"Expected dict envelope, got {type(payload).__name__}: {payload!r}"
+    assert "result" in payload, f"Missing 'result' in {payload!r}"
+
+
 # ---------------------------------------------------------------------------
 # Core search/detail shape checks
 # ---------------------------------------------------------------------------
@@ -63,23 +79,25 @@ async def test_get_site_details_round_trip(mcp_client):
         pytest.skip("demo NetBox has no sites; can't round-trip")
     sid = payload["results"][0]["id"]
     detail = await _call(mcp_client, "get_site_details", {"id": sid})
-    assert isinstance(detail, list), f"Detail returned {type(detail).__name__}, not list"
-    assert len(detail) == 1, f"Detail returned {len(detail)} items, expected 1"
-    assert detail[0]["id"] == sid
+    _assert_detail_envelope(detail)
+    assert len(detail["results"]) == 1, (
+        f"Detail returned {len(detail['results'])} items, expected 1"
+    )
+    assert detail["results"][0]["id"] == sid
 
 
-async def test_get_site_details_missing_id_returns_empty(mcp_client):
-    """No `id` arg -> [] per the helper convention."""
+async def test_get_site_details_missing_id_returns_empty_envelope(mcp_client):
+    """No `id` arg -> {results: []} per the helper convention."""
     detail = await _call(mcp_client, "get_site_details", {})
-    assert detail == []
+    assert detail == {"results": []}
 
 
-async def test_get_site_details_unknown_id_returns_empty(mcp_client):
-    """Unknown id -> [] (helper swallows the 404)."""
+async def test_get_site_details_unknown_id_returns_empty_envelope(mcp_client):
+    """Unknown id -> {results: []} (helper swallows the 404)."""
     detail = await _call(
         mcp_client, "get_site_details", {"id": 99999999}
     )
-    assert detail == []
+    assert detail == {"results": []}
 
 
 # ---------------------------------------------------------------------------
@@ -223,7 +241,7 @@ async def test_search_nonexistent_name_returns_zero(mcp_client):
 
 
 async def test_get_prefix_available_ips_shape(mcp_client):
-    """If demo has any prefix, available-ips should return a list."""
+    """If demo has any prefix, available-ips should return the {results} envelope."""
     prefixes = await _call(mcp_client, "search_prefixes", {"limit": 1})
     _assert_search_envelope(prefixes)
     if not prefixes["results"]:
@@ -232,12 +250,60 @@ async def test_get_prefix_available_ips_shape(mcp_client):
     avail = await _call(
         mcp_client, "get_prefix_available_ips", {"id": pid, "limit": 3}
     )
-    assert isinstance(avail, list), (
-        f"available-ips returned {type(avail).__name__}, expected list"
-    )
+    _assert_detail_envelope(avail)
     # If non-empty, each entry must have an address-like field
-    for entry in avail:
+    for entry in avail["results"]:
         assert isinstance(entry, dict)
         assert "address" in entry or "family" in entry, (
             f"available-ips entry missing recognised fields: {entry!r}"
         )
+
+
+async def test_get_ip_range_available_ips_shape(mcp_client):
+    """Same envelope contract on the IP-range variant.
+
+    NetBox returns an empty list when the parent range has
+    ``mark_utilized=true``, so we don't assert non-empty results; we
+    only assert the envelope shape is consistent with the prefix variant.
+    """
+    ranges = await _call(mcp_client, "search_ip_ranges", {"limit": 1})
+    _assert_search_envelope(ranges)
+    if not ranges["results"]:
+        pytest.skip("demo NetBox has no IP ranges")
+    rid = ranges["results"][0]["id"]
+    avail = await _call(
+        mcp_client, "get_ip_range_available_ips", {"id": rid, "limit": 3}
+    )
+    _assert_detail_envelope(avail)
+    for entry in avail["results"]:
+        assert isinstance(entry, dict)
+        assert "address" in entry or "family" in entry, (
+            f"available-ips entry missing recognised fields: {entry!r}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Envelope contract for not-found / missing-id across helper families
+# ---------------------------------------------------------------------------
+
+
+async def test_get_list_unknown_id_returns_results_envelope(mcp_client):
+    """_get_list-backed tools also emit {results: []} on missing/unknown id.
+
+    Covers the helper class behind ``get_prefix_available_ips`` and
+    siblings; without the envelope FastMCP would drop structured
+    content over the wire and the tool would appear to "return nothing".
+    """
+    avail = await _call(mcp_client, "get_prefix_available_ips", {})
+    assert avail == {"results": []}
+
+
+async def test_get_action_unknown_id_returns_result_envelope(mcp_client):
+    """_get_action-backed tools emit {result: []} on missing id.
+
+    Covers trace / elevation endpoints. The key is ``result`` (singular)
+    not ``results``, because the payload is heterogeneous (list of
+    segments, list of rack units, rendered config blob).
+    """
+    payload = await _call(mcp_client, "get_interface_trace", {})
+    assert payload == {"result": []}

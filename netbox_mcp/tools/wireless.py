@@ -1,6 +1,6 @@
 """Tools for the NetBox wireless app."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from ..helpers import _get_detail, _get_list, _search  # noqa: F401
 from ..server import mcp
@@ -50,13 +50,13 @@ async def search_wireless_lan_groups(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_wireless_lan_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_wireless_lan_group_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get wireless LAN group by ID (wireless/wireless-lan-groups/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the wireless LAN group to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the wireless LAN group to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("wireless/wireless-lan-groups/", args["id"], args)
 
 
@@ -115,13 +115,13 @@ async def search_wireless_lans(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_wireless_lan_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_wireless_lan_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get wireless LAN by ID (wireless/wireless-lans/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the wireless LAN to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the wireless LAN to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("wireless/wireless-lans/", args["id"], args)
 
 
@@ -176,11 +176,11 @@ async def search_wireless_links(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_wireless_link_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_wireless_link_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get wireless link by ID (wireless/wireless-links/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the wireless link to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the wireless link to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("wireless/wireless-links/", args["id"], args)

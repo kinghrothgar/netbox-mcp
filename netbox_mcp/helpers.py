@@ -17,11 +17,20 @@ and detail tools. Three knobs are exposed via the standard `args` dict:
 
 In addition, ``limit`` is hard-capped at :data:`MAX_LIMIT` (100) to prevent
 pathological-size responses, and ``offset`` is honoured so the LLM can
-paginate. Search tools return ``{"count": int, "results": [...]}`` instead
-of a bare list so the LLM knows whether to refine filters or page through.
+paginate.
+
+All helpers return a dict envelope rather than a bare list so FastMCP
+emits ``structured_content`` over the wire even on empty/not-found
+results (some MCP clients render bare ``[]`` as a blank body):
+
+* :func:`_search` returns ``{"count": int, "results": [...]}``.
+* :func:`_get_detail` returns ``{"results": [obj]}`` or ``{"results": []}``.
+* :func:`_get_list` returns ``{"results": [...]}``.
+* :func:`_get_action` returns ``{"result": <payload>}`` (the payload may
+  be a list, dict, or scalar depending on the underlying endpoint).
 """
 
-from typing import Any, Dict, Iterable, List, Optional, Union
+from typing import Any, Dict, Iterable, Optional, Union
 
 from .client import NetBoxClient, get_netbox_credentials
 
@@ -128,12 +137,19 @@ def _compact_detail(obj: Dict[str, Any]) -> Dict[str, Any]:
     return out
 
 
-async def _get_detail(endpoint_base: str, id_value: Any, args: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+async def _get_detail(endpoint_base: str, id_value: Any, args: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Fetch a single NetBox object by ID.
 
     Honours ``fields`` and ``exclude`` from ``args`` for server-side
     projection. Strips a small set of noisy keys from the result unless
     ``args['raw']`` is truthy.
+
+    Always returns the envelope ``{"results": [...]}`` - a one-element
+    list on success, an empty list on 404 / missing id / non-dict
+    response. The envelope is required so FastMCP emits
+    ``structured_content`` over the wire even when the result is empty;
+    bare ``[]`` returns are dropped by some MCP clients and become
+    indistinguishable from a transport failure.
     """
     args = args or {}
     params: Dict[str, Any] = {}
@@ -148,15 +164,15 @@ async def _get_detail(endpoint_base: str, id_value: Any, args: Optional[Dict[str
             params or None,
         )
         if not isinstance(result, dict):
-            return []
+            return {"results": []}
         if args.get("raw"):
-            return [result]
-        return [_compact_detail(result)]
+            return {"results": [result]}
+        return {"results": [_compact_detail(result)]}
     except Exception:
-        return []
+        return {"results": []}
 
 
-async def _get_action(endpoint: str, args: Optional[Dict[str, Any]] = None) -> Any:
+async def _get_action(endpoint: str, args: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Fetch a NetBox sub-resource action endpoint.
 
     Used for endpoints like ``dcim/interfaces/{id}/trace/``,
@@ -165,9 +181,11 @@ async def _get_action(endpoint: str, args: Optional[Dict[str, Any]] = None) -> A
     list of rack units, rendered config blob) that we should not munge.
 
     Forwards ``fields``/``exclude`` from ``args`` when present so callers
-    can still project. Returns the raw NetBox payload (list, dict, or
-    other) or ``[]`` on error to match the broader tool convention of
-    never raising into the LLM.
+    can still project. Returns the envelope ``{"result": <payload>}``
+    with the raw NetBox payload (list, dict, or scalar). On error the
+    payload is ``[]`` to preserve the never-raise-into-the-LLM rule.
+    The envelope is required so FastMCP emits ``structured_content``
+    over the wire even when the underlying payload is empty.
     """
     args = args or {}
     params: Dict[str, Any] = {}
@@ -176,23 +194,29 @@ async def _get_action(endpoint: str, args: Optional[Dict[str, Any]] = None) -> A
 
     netbox_client = NetBoxClient(*get_netbox_credentials())
     try:
-        return await netbox_client.get(endpoint, params or None)
+        return {"result": await netbox_client.get(endpoint, params or None)}
     except Exception:
-        return []
+        return {"result": []}
 
 
-async def _get_list(endpoint: str, args: Dict[str, Any], default_limit: int = 10) -> List[Dict[str, Any]]:
+async def _get_list(endpoint: str, args: Dict[str, Any], default_limit: int = 10) -> Dict[str, Any]:
     """Fetch an endpoint that returns a JSON list directly (no `results` envelope).
 
-    Used for NetBox sub-resources like `available-ips`, `available-prefixes`,
-    `available-asns`, `available-vlans`, which return a bare list and have
-    no notion of a NetBox-level count or brief representation.
+    Used for NetBox sub-resources like ``available-ips``,
+    ``available-prefixes``, ``available-asns``, ``available-vlans``,
+    which return a bare list and have no notion of a NetBox-level count
+    or brief representation.
+
+    Always returns the envelope ``{"results": [...]}``. The envelope is
+    required so FastMCP emits ``structured_content`` over the wire even
+    when NetBox returns an empty list (which happens, e.g., when the
+    parent prefix / range has ``mark_utilized=true``).
     """
     params: Dict[str, Any] = {"limit": _capped_limit(args, default_limit)}
     _apply_common_args(args, params)
     netbox_client = NetBoxClient(*get_netbox_credentials())
     try:
         result = await netbox_client.get(endpoint, params)
-        return result if isinstance(result, list) else []
+        return {"results": result if isinstance(result, list) else []}
     except Exception:
-        return []
+        return {"results": []}

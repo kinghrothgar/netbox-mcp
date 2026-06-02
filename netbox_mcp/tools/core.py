@@ -1,6 +1,6 @@
 """Tools for the NetBox core app (selected read-useful resources)."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from ..helpers import _get_detail, _get_list, _search  # noqa: F401
 from ..server import mcp
@@ -47,13 +47,13 @@ async def search_object_types(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_object_type_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_object_type_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get object type by ID (core/object-types/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the object type to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the object type to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("core/object-types/", args["id"], args)
 
 
@@ -111,11 +111,11 @@ async def search_object_changes(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_object_change_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_object_change_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get object change by ID (core/object-changes/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the object change to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the object change to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("core/object-changes/", args["id"], args)

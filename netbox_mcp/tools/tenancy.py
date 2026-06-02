@@ -1,6 +1,6 @@
 """Tools for the NetBox tenancy app."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from ..helpers import _get_detail, _get_list, _search
 from ..server import mcp
@@ -41,13 +41,13 @@ async def search_tenants(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_tenant_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_tenant_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get tenant details by ID (tenancy/tenants/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the tenant to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the tenant to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("tenancy/tenants/", args["id"], args)
 
 
@@ -81,13 +81,13 @@ async def search_tenant_groups(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_tenant_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_tenant_group_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get tenant group details by ID (tenancy/tenant-groups/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the tenant group to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the tenant group to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("tenancy/tenant-groups/", args["id"], args)
 
 
@@ -131,13 +131,13 @@ async def search_contacts(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_contact_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_contact_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get contact details by ID (tenancy/contacts/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the contact to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the contact to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("tenancy/contacts/", args["id"], args)
 
 
@@ -171,13 +171,13 @@ async def search_contact_groups(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_contact_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_contact_group_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get contact group details by ID (tenancy/contact-groups/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the contact group to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the contact group to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("tenancy/contact-groups/", args["id"], args)
 
 
@@ -211,13 +211,13 @@ async def search_contact_roles(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_contact_role_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_contact_role_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get contact role details by ID (tenancy/contact-roles/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the contact role to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the contact role to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("tenancy/contact-roles/", args["id"], args)
 
 
@@ -267,13 +267,13 @@ async def search_contact_assignments(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_contact_assignment_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_contact_assignment_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get contact assignment by ID (tenancy/contact-assignments/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the contact assignment to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the contact assignment to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("tenancy/contact-assignments/", args["id"], args)
 
 

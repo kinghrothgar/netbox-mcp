@@ -136,10 +136,10 @@ async def test_search_virtual_machines_vmtype_filter_accepted(
 async def test_get_rack_group_details_missing_id(
     mcp_client, target_version: Tuple[int, int]
 ):
-    """Detail tools return [] when called without id, even when gated."""
+    """Detail tools return {results: []} when called without id, even when gated."""
     if target_version < (4, 6):
         pytest.skip("get_rack_group_details requires target >= 4.6")
-    assert await _call(mcp_client, "get_rack_group_details", {}) == []
+    assert await _call(mcp_client, "get_rack_group_details", {}) == {"results": []}
 
 
 async def test_get_cable_bundle_details_missing_id(
@@ -147,7 +147,7 @@ async def test_get_cable_bundle_details_missing_id(
 ):
     if target_version < (4, 6):
         pytest.skip("get_cable_bundle_details requires target >= 4.6")
-    assert await _call(mcp_client, "get_cable_bundle_details", {}) == []
+    assert await _call(mcp_client, "get_cable_bundle_details", {}) == {"results": []}
 
 
 async def test_get_virtual_machine_type_details_missing_id(
@@ -159,4 +159,4 @@ async def test_get_virtual_machine_type_details_missing_id(
         )
     assert await _call(
         mcp_client, "get_virtual_machine_type_details", {}
-    ) == []
+    ) == {"results": []}

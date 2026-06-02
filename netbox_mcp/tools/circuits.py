@@ -1,6 +1,6 @@
 """Tools for the NetBox circuits app."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from ..helpers import _get_detail, _get_list, _search
 from ..server import mcp
@@ -48,13 +48,13 @@ async def search_circuits(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_circuit_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_circuit_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get circuit by ID (circuits/circuits/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the circuit to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the circuit to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("circuits/circuits/", args["id"], args)
 
 
@@ -88,13 +88,13 @@ async def search_circuit_groups(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_circuit_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_circuit_group_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get circuit group by ID (circuits/circuit-groups/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the circuit group to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the circuit group to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("circuits/circuit-groups/", args["id"], args)
 
 
@@ -132,13 +132,13 @@ async def search_circuit_group_assignments(args: Dict[str, Any]) -> Dict[str, An
         "openWorldHint": True
     }
 )
-async def get_circuit_group_assignment_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_circuit_group_assignment_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get circuit group assignment by ID (circuits/circuit-group-assignments/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the circuit group assignment to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the circuit group assignment to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("circuits/circuit-group-assignments/", args["id"], args)
 
 
@@ -176,13 +176,13 @@ async def search_circuit_terminations(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_circuit_termination_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_circuit_termination_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get circuit termination by ID (circuits/circuit-terminations/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the circuit termination to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the circuit termination to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("circuits/circuit-terminations/", args["id"], args)
 
 
@@ -216,13 +216,13 @@ async def search_circuit_types(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_circuit_type_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_circuit_type_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get circuit type by ID (circuits/circuit-types/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the circuit type to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the circuit type to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("circuits/circuit-types/", args["id"], args)
 
 
@@ -256,13 +256,13 @@ async def search_providers(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_provider_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_provider_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get provider by ID (circuits/providers/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the provider to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the provider to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("circuits/providers/", args["id"], args)
 
 
@@ -300,13 +300,13 @@ async def search_provider_accounts(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_provider_account_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_provider_account_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get provider account by ID (circuits/provider-accounts/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the provider account to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the provider account to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("circuits/provider-accounts/", args["id"], args)
 
 
@@ -340,13 +340,13 @@ async def search_provider_networks(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_provider_network_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_provider_network_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get provider network by ID (circuits/provider-networks/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the provider network to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the provider network to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("circuits/provider-networks/", args["id"], args)
 
 
@@ -388,13 +388,13 @@ async def search_virtual_circuits(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_virtual_circuit_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_virtual_circuit_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get virtual circuit by ID (circuits/virtual-circuits/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the virtual circuit to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the virtual circuit to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("circuits/virtual-circuits/", args["id"], args)
 
 
@@ -432,13 +432,13 @@ async def search_virtual_circuit_terminations(args: Dict[str, Any]) -> Dict[str,
         "openWorldHint": True
     }
 )
-async def get_virtual_circuit_termination_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_virtual_circuit_termination_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get virtual circuit termination by ID (circuits/virtual-circuit-terminations/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the virtual circuit termination to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the virtual circuit termination to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("circuits/virtual-circuit-terminations/", args["id"], args)
 
 
@@ -472,13 +472,13 @@ async def search_virtual_circuit_types(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_virtual_circuit_type_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_virtual_circuit_type_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get virtual circuit type by ID (circuits/virtual-circuit-types/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the virtual circuit type to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the virtual circuit type to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("circuits/virtual-circuit-types/", args["id"], args)
 
 

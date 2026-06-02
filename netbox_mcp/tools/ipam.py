@@ -1,6 +1,6 @@
 """Tools for the NetBox ipam app."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from ..helpers import _get_detail, _get_list, _search
 from ..server import mcp
@@ -55,13 +55,13 @@ async def search_vrfs(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_vrf_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_vrf_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get VRF by ID (ipam/vrfs/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the VRF to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the VRF to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/vrfs/", args["id"], args)
 
 
@@ -107,13 +107,13 @@ async def search_route_targets(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_route_target_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_route_target_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get route target by ID (ipam/route-targets/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the route target to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the route target to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/route-targets/", args["id"], args)
 
 
@@ -157,13 +157,13 @@ async def search_rirs(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_rir_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_rir_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get RIR by ID (ipam/rirs/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the RIR to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the RIR to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/rirs/", args["id"], args)
 
 
@@ -209,13 +209,13 @@ async def search_aggregates(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_aggregate_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_aggregate_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get aggregate by ID (ipam/aggregates/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the aggregate to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the aggregate to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/aggregates/", args["id"], args)
 
 
@@ -263,13 +263,13 @@ async def search_ipam_roles(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_ipam_role_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_ipam_role_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get IPAM role by ID (ipam/roles/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the IPAM role to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the IPAM role to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/roles/", args["id"], args)
 
 
@@ -344,13 +344,13 @@ async def search_prefixes(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_prefix_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_prefix_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get prefix by ID (ipam/prefixes/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the prefix to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the prefix to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/prefixes/", args["id"], args)
 
 
@@ -363,7 +363,7 @@ async def get_prefix_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def get_prefix_available_prefixes(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_prefix_available_prefixes(args: Dict[str, Any]) -> Dict[str, Any]:
     """List free child prefixes inside a parent prefix
     (ipam/prefixes/{id}/available-prefixes/).
 
@@ -371,10 +371,10 @@ async def get_prefix_available_prefixes(args: Dict[str, Any]) -> List[Dict[str, 
         id: Numeric ID of the parent prefix
         limit: Maximum number of results (default 10)
 
-    Returns a list of available prefix candidates, or `[]`.
+    Returns the envelope `{"results": [...]}` where results is the list of available prefix candidates (empty if none).
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_list(f"ipam/prefixes/{args['id']}/available-prefixes/", args)
 
 
@@ -387,7 +387,7 @@ async def get_prefix_available_prefixes(args: Dict[str, Any]) -> List[Dict[str, 
         "openWorldHint": True
     }
 )
-async def get_prefix_available_ips(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_prefix_available_ips(args: Dict[str, Any]) -> Dict[str, Any]:
     """List free IP addresses inside a prefix
     (ipam/prefixes/{id}/available-ips/).
 
@@ -395,10 +395,10 @@ async def get_prefix_available_ips(args: Dict[str, Any]) -> List[Dict[str, Any]]
         id: Numeric ID of the prefix
         limit: Maximum number of IPs to return (default 10)
 
-    Returns a list of available IP address candidates, or `[]`.
+    Returns the envelope `{"results": [...]}` where results is the list of available IP address candidates (empty if none, e.g. NetBox returns no rows when the parent has `mark_utilized=true`).
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_list(f"ipam/prefixes/{args['id']}/available-ips/", args)
 
 
@@ -453,13 +453,13 @@ async def search_ip_ranges(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_ip_range_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_ip_range_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get IP range by ID (ipam/ip-ranges/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the IP range to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the IP range to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/ip-ranges/", args["id"], args)
 
 
@@ -472,7 +472,7 @@ async def get_ip_range_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def get_ip_range_available_ips(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_ip_range_available_ips(args: Dict[str, Any]) -> Dict[str, Any]:
     """List free IP addresses inside an IP range
     (ipam/ip-ranges/{id}/available-ips/).
 
@@ -480,10 +480,10 @@ async def get_ip_range_available_ips(args: Dict[str, Any]) -> List[Dict[str, Any
         id: Numeric ID of the IP range
         limit: Maximum number of IPs to return (default 10)
 
-    Returns a list of available IP address candidates, or `[]`.
+    Returns the envelope `{"results": [...]}` where results is the list of available IP address candidates (empty if none, e.g. NetBox returns no rows when the parent has `mark_utilized=true`).
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_list(f"ipam/ip-ranges/{args['id']}/available-ips/", args)
 
 
@@ -556,13 +556,13 @@ async def search_ip_addresses(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_ip_address_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_ip_address_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get IP address by ID (ipam/ip-addresses/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the IP address to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the IP address to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/ip-addresses/", args["id"], args)
 
 
@@ -611,13 +611,13 @@ async def search_fhrp_groups(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_fhrp_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_fhrp_group_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get FHRP group by ID (ipam/fhrp-groups/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the FHRP group to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the FHRP group to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/fhrp-groups/", args["id"], args)
 
 
@@ -665,13 +665,13 @@ async def search_fhrp_group_assignments(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_fhrp_group_assignment_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_fhrp_group_assignment_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get FHRP group assignment by ID (ipam/fhrp-group-assignments/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the FHRP group assignment to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the FHRP group assignment to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/fhrp-group-assignments/", args["id"], args)
 
 
@@ -724,13 +724,13 @@ async def search_asns(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_asn_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_asn_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get ASN by ID (ipam/asns/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the ASN to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the ASN to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/asns/", args["id"], args)
 
 
@@ -778,13 +778,13 @@ async def search_asn_ranges(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_asn_range_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_asn_range_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get ASN range by ID (ipam/asn-ranges/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the ASN range to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the ASN range to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/asn-ranges/", args["id"], args)
 
 
@@ -797,7 +797,7 @@ async def get_asn_range_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def get_asn_range_available_asns(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_asn_range_available_asns(args: Dict[str, Any]) -> Dict[str, Any]:
     """List free ASNs inside an ASN range
     (ipam/asn-ranges/{id}/available-asns/).
 
@@ -805,10 +805,10 @@ async def get_asn_range_available_asns(args: Dict[str, Any]) -> List[Dict[str, A
         id: Numeric ID of the ASN range
         limit: Maximum number of ASNs to return (default 10)
 
-    Returns a list of available ASN candidates, or `[]`.
+    Returns the envelope `{"results": [...]}` where results is the list of available ASN candidates (empty if none).
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_list(f"ipam/asn-ranges/{args['id']}/available-asns/", args)
 
 
@@ -865,13 +865,13 @@ async def search_vlan_groups(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_vlan_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_vlan_group_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get VLAN group by ID (ipam/vlan-groups/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the VLAN group to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the VLAN group to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/vlan-groups/", args["id"], args)
 
 
@@ -884,7 +884,7 @@ async def get_vlan_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         "openWorldHint": True
     }
 )
-async def get_vlan_group_available_vlans(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_vlan_group_available_vlans(args: Dict[str, Any]) -> Dict[str, Any]:
     """List free VLAN VIDs inside a VLAN group
     (ipam/vlan-groups/{id}/available-vlans/).
 
@@ -892,10 +892,10 @@ async def get_vlan_group_available_vlans(args: Dict[str, Any]) -> List[Dict[str,
         id: Numeric ID of the VLAN group
         limit: Maximum number of VLANs to return (default 10)
 
-    Returns a list of available VLAN candidates, or `[]`.
+    Returns the envelope `{"results": [...]}` where results is the list of available VLAN candidates (empty if none).
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_list(f"ipam/vlan-groups/{args['id']}/available-vlans/", args)
 
 
@@ -960,13 +960,13 @@ async def search_vlans(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_vlan_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_vlan_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get VLAN by ID (ipam/vlans/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the VLAN to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the VLAN to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/vlans/", args["id"], args)
 
 
@@ -1006,14 +1006,14 @@ async def search_vlan_translation_policies(args: Dict[str, Any]) -> Dict[str, An
         "openWorldHint": True
     }
 )
-async def get_vlan_translation_policy_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_vlan_translation_policy_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get VLAN translation policy by ID
     (ipam/vlan-translation-policies/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the VLAN translation policy. Returns `[obj]` or `[]`.
+        id: Numeric ID of the VLAN translation policy. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/vlan-translation-policies/", args["id"], args)
 
 
@@ -1055,13 +1055,13 @@ async def search_vlan_translation_rules(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_vlan_translation_rule_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_vlan_translation_rule_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get VLAN translation rule by ID (ipam/vlan-translation-rules/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the VLAN translation rule. Returns `[obj]` or `[]`.
+        id: Numeric ID of the VLAN translation rule. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/vlan-translation-rules/", args["id"], args)
 
 
@@ -1105,13 +1105,13 @@ async def search_service_templates(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_service_template_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_service_template_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get service template by ID (ipam/service-templates/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the service template. Returns `[obj]` or `[]`.
+        id: Numeric ID of the service template. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/service-templates/", args["id"], args)
 
 
@@ -1169,13 +1169,13 @@ async def search_services(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_service_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_service_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get service by ID (ipam/services/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the service to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the service to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("ipam/services/", args["id"], args)
 
 

@@ -1,6 +1,6 @@
 """Tools for the NetBox vpn app."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from ..helpers import _get_detail, _get_list, _search  # noqa: F401
 from ..server import mcp
@@ -46,13 +46,13 @@ async def search_tunnel_groups(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_tunnel_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_tunnel_group_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get tunnel group by ID (vpn/tunnel-groups/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the tunnel group to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the tunnel group to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("vpn/tunnel-groups/", args["id"], args)
 
 
@@ -105,13 +105,13 @@ async def search_tunnels(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_tunnel_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_tunnel_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get tunnel by ID (vpn/tunnels/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the tunnel to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the tunnel to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("vpn/tunnels/", args["id"], args)
 
 
@@ -162,13 +162,13 @@ async def search_tunnel_terminations(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_tunnel_termination_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_tunnel_termination_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get tunnel termination by ID (vpn/tunnel-terminations/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the tunnel termination to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the tunnel termination to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("vpn/tunnel-terminations/", args["id"], args)
 
 
@@ -219,13 +219,13 @@ async def search_ike_proposals(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_ike_proposal_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_ike_proposal_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get IKE proposal by ID (vpn/ike-proposals/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the IKE proposal to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the IKE proposal to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("vpn/ike-proposals/", args["id"], args)
 
 
@@ -271,13 +271,13 @@ async def search_ike_policies(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_ike_policy_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_ike_policy_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get IKE policy by ID (vpn/ike-policies/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the IKE policy to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the IKE policy to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("vpn/ike-policies/", args["id"], args)
 
 
@@ -326,13 +326,13 @@ async def search_ipsec_proposals(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_ipsec_proposal_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_ipsec_proposal_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get IPsec proposal by ID (vpn/ipsec-proposals/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the IPsec proposal to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the IPsec proposal to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("vpn/ipsec-proposals/", args["id"], args)
 
 
@@ -376,13 +376,13 @@ async def search_ipsec_policies(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_ipsec_policy_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_ipsec_policy_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get IPsec policy by ID (vpn/ipsec-policies/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the IPsec policy to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the IPsec policy to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("vpn/ipsec-policies/", args["id"], args)
 
 
@@ -428,13 +428,13 @@ async def search_ipsec_profiles(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_ipsec_profile_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_ipsec_profile_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get IPsec profile by ID (vpn/ipsec-profiles/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the IPsec profile to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the IPsec profile to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("vpn/ipsec-profiles/", args["id"], args)
 
 
@@ -489,13 +489,13 @@ async def search_l2vpns(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_l2vpn_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_l2vpn_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get L2VPN by ID (vpn/l2vpns/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the L2VPN to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the L2VPN to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("vpn/l2vpns/", args["id"], args)
 
 
@@ -555,11 +555,11 @@ async def search_l2vpn_terminations(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_l2vpn_termination_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_l2vpn_termination_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get L2VPN termination by ID (vpn/l2vpn-terminations/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the L2VPN termination to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the L2VPN termination to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("vpn/l2vpn-terminations/", args["id"], args)

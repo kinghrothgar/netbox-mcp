@@ -1,6 +1,6 @@
 """Tools for the NetBox virtualization app."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from ..helpers import _get_detail, _get_list, _search  # noqa: F401
 from ..server import mcp
@@ -47,13 +47,13 @@ async def search_cluster_types(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_cluster_type_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_cluster_type_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get cluster type by ID (virtualization/cluster-types/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the cluster type to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the cluster type to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("virtualization/cluster-types/", args["id"], args)
 
 
@@ -99,13 +99,13 @@ async def search_cluster_groups(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_cluster_group_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_cluster_group_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get cluster group by ID (virtualization/cluster-groups/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the cluster group to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the cluster group to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("virtualization/cluster-groups/", args["id"], args)
 
 
@@ -164,13 +164,13 @@ async def search_clusters(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_cluster_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_cluster_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get cluster by ID (virtualization/clusters/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the cluster to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the cluster to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("virtualization/clusters/", args["id"], args)
 
 
@@ -218,13 +218,13 @@ async def search_virtual_machine_types(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_virtual_machine_type_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_virtual_machine_type_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get virtual machine type by ID (virtualization/virtual-machine-types/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the virtual machine type to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the virtual machine type to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("virtualization/virtual-machine-types/", args["id"], args)
 
 
@@ -304,13 +304,13 @@ async def search_virtual_machines(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_virtual_machine_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_virtual_machine_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get virtual machine by ID (virtualization/virtual-machines/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the virtual machine to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the virtual machine to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("virtualization/virtual-machines/", args["id"], args)
 
 
@@ -369,13 +369,13 @@ async def search_vm_interfaces(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_vm_interface_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_vm_interface_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get VM interface by ID (virtualization/interfaces/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the VM interface to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the VM interface to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("virtualization/interfaces/", args["id"], args)
 
 
@@ -419,11 +419,11 @@ async def search_virtual_disks(args: Dict[str, Any]) -> Dict[str, Any]:
         "openWorldHint": True
     }
 )
-async def get_virtual_disk_details(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def get_virtual_disk_details(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get virtual disk by ID (virtualization/virtual-disks/{id}/).
     Accepts: id (required)
-        id: Numeric ID of the virtual disk to fetch. Returns `[obj]` or `[]`.
+        id: Numeric ID of the virtual disk to fetch. Returns the envelope `{"results": [obj]}` or `{"results": []}`.
     """
     if "id" not in args:
-        return []
+        return {"results": []}
     return await _get_detail("virtualization/virtual-disks/", args["id"], args)
